@@ -520,10 +520,25 @@ body{
   </div>
 </div>
 
-<script>
+<script type="module">
+/* ─── FIREBASE 설정 ──────────────────────────────────── */
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc, getDocs, orderBy, query, deleteDoc, doc }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAGpTAL0HI_t6CMPCDSge9aL7jx4KhljWs",
+  authDomain: "tarot-d9708.firebaseapp.com",
+  projectId: "tarot-d9708",
+  storageBucket: "tarot-d9708.firebasestorage.app",
+  messagingSenderId: "273677411691",
+  appId: "1:273677411691:web:586b26049dd45047c3582e"
+};
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
 /* ─── CONFIG ────────────────────────────────────────── */
-const ADMIN_PW   = '1234';           // ← 비밀번호 변경
-const STORE_KEY  = 'arcana_results'; // localStorage key
+const ADMIN_PW = '1234'; // ← 비밀번호 변경
 
 /* ─── DECK DATA ─────────────────────────────────────── */
 const DECKS = {
@@ -657,29 +672,39 @@ function showAdminResults(){
   loadResults();
 }
 
-function loadResults(){
-  const data=JSON.parse(localStorage.getItem(STORE_KEY)||'[]');
+async function loadResults(){
   const el=document.getElementById('resultsList');
-  if(!data.length){
-    el.innerHTML='<div class="no-result">아직 상담 신청 내역이 없습니다 ✦</div>';
-    return;
+  el.innerHTML='<div class="no-result">불러오는 중... ✦</div>';
+  try {
+    const q=query(collection(db,'readings'),orderBy('id','desc'));
+    const snap=await getDocs(q);
+    if(snap.empty){
+      el.innerHTML='<div class="no-result">아직 상담 신청 내역이 없습니다 ✦</div>';
+      return;
+    }
+    el.innerHTML=snap.docs.map((d,i)=>{
+      const r=d.data();
+      return `
+        <div class="result-item">
+          <div class="result-item-head">
+            <span class="result-name">👤 ${r.clientName}</span>
+            ${i===0?'<span class="badge-new">NEW</span>':''}
+          </div>
+          <div class="result-row">📅 <span>${r.datetime}</span></div>
+          <div class="result-row">🃏 <span>${r.deckName} · ${r.spreadLabel}</span></div>
+          <div class="cards-chips">${r.cards.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+        </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML='<div class="no-result">불러오기 실패: '+e.message+'</div>';
   }
-  el.innerHTML=[...data].reverse().map((r,i)=>`
-    <div class="result-item">
-      <div class="result-item-head">
-        <span class="result-name">👤 ${r.clientName}</span>
-        ${i===0?'<span class="badge-new">NEW</span>':''}
-      </div>
-      <div class="result-row">📅 <span>${r.datetime}</span></div>
-      <div class="result-row">🃏 <span>${r.deckName} · ${r.spreadLabel}</span></div>
-      <div class="cards-chips">${r.cards.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
-    </div>
-  `).join('');
 }
 
-function clearAll(){
+async function clearAll(){
   if(confirm('모든 신청 내역을 삭제하시겠습니까?')){
-    localStorage.removeItem(STORE_KEY);
+    const snap=await getDocs(collection(db,'readings'));
+    const dels=snap.docs.map(d=>deleteDoc(doc(db,'readings',d.id)));
+    await Promise.all(dels);
     loadResults();
   }
 }
@@ -747,7 +772,7 @@ function updatePickStatus(){
   document.getElementById('pickStatus').textContent=`${picked.length} / ${CLIENT_SPREAD} 장 선택됨`;
 }
 
-document.getElementById('btnToForm').addEventListener('click',()=>{
+document.getElementById('btnToForm').addEventListener('click', async ()=>{
   const deck=DECKS[CLIENT_DECK];
   const rec={
     id:Date.now(),
@@ -757,18 +782,18 @@ document.getElementById('btnToForm').addEventListener('click',()=>{
     spreadLabel:`${CLIENT_SPREAD}장`,
     cards:picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`),
   };
-  const existing=JSON.parse(localStorage.getItem(STORE_KEY)||'[]');
-  existing.push(rec);
-  localStorage.setItem(STORE_KEY,JSON.stringify(existing));
+  try {
+    await addDoc(collection(db,'readings'), rec);
+  } catch(e) {
+    console.error('저장 실패:', e);
+  }
 
   document.getElementById('doneChips').innerHTML=
     picked.map(c=>`<span class="done-chip">${c.order}번째 ${c.s} ${c.l}</span>`).join('');
 
-  // update done message with name
-  const doneTitle = document.getElementById('doneName');
-  if(doneTitle) doneTitle.textContent = CLIENT_NAME ? `${CLIENT_NAME}님, 선택 완료!` : '카드 선택 완료';
+  const doneTitle=document.getElementById('doneName');
+  if(doneTitle) doneTitle.textContent=CLIENT_NAME?`${CLIENT_NAME}님, 선택 완료!`:'카드 선택 완료';
 
-  // kakao link from URL param
   const kakaoUrl=params.get('kakao');
   if(kakaoUrl){
     document.getElementById('kakaoLink').href=kakaoUrl;
