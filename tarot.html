@@ -419,13 +419,13 @@ body{
           <label style="font-size:.72rem;color:var(--gold);letter-spacing:.1em;display:block;margin-bottom:6px;">내담자 이름 ✦ 필수</label>
           <input type="text" id="clientNameInput"
             style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.4);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.84rem;outline:none;"
-            placeholder="예: 김지수" oninput="generateLink()">
+            placeholder="예: 김지수">
         </div>
         <div style="flex:1;min-width:160px;">
           <label style="font-size:.72rem;color:var(--gold);letter-spacing:.1em;display:block;margin-bottom:6px;">카카오 채널 URL (선택)</label>
           <input type="text" id="kakaoInput"
             style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.84rem;outline:none;"
-            placeholder="https://pf.kakao.com/..." oninput="generateLink()">
+            placeholder="https://pf.kakao.com/...">
         </div>
       </div>
       <div class="sec-title">생성된 링크</div>
@@ -434,14 +434,14 @@ body{
       </div>
       <div class="link-box" id="linkBox" style="display:none;">
         <span class="link-url" id="generatedLink">—</span>
-        <button class="copy-btn" id="copyBtn" onclick="copyLink()">복사</button>
+        <button class="copy-btn" id="copyBtn">복사</button>
       </div>
       <p id="linkHint" style="font-size:.7rem;color:var(--muted);margin-top:10px;text-align:center;display:none;">
         이 링크를 해당 내담자에게만 전달하세요. 다음 내담자는 이름을 바꿔 새 링크를 생성하세요.
       </p>
     </div>
 
-    <button class="btn fade-up d4" id="btnGenLink" disabled onclick="generateLink()" style="margin-bottom:24px;">링크 생성 ✦</button>
+    <button class="btn fade-up d4" id="btnGenLink" disabled style="margin-bottom:24px;">링크 생성 ✦</button>
   </div>
 
   <!-- ADMIN: RESULTS TAB -->
@@ -452,9 +452,9 @@ body{
       <span class="logo-sub">관리자 · 상담 결과</span>
     </div>
     <div style="display:flex;gap:10px;margin-bottom:24px;" class="fade-up">
-      <button class="btn-outline" onclick="showAdminSetup()">← 덱 설정으로</button>
-      <button class="btn-outline" onclick="loadResults()" style="margin-left:auto;">새로고침</button>
-      <button class="btn-outline" style="color:#e07070;border-color:rgba(224,112,112,.35);" onclick="clearAll()">전체 삭제</button>
+      <button class="btn-outline" id="btnToSetup">← 덱 설정으로</button>
+      <button class="btn-outline" id="btnRefresh" style="margin-left:auto;">새로고침</button>
+      <button class="btn-outline" id="btnClearAll" style="color:#e07070;border-color:rgba(224,112,112,.35);">전체 삭제</button>
     </div>
     <div id="resultsList" style="width:100%;max-width:640px;"></div>
   </div>
@@ -504,18 +504,17 @@ body{
 </div>
 
 <!-- admin access button (client side only) -->
-<button class="admin-fab" id="adminFab" onclick="openAdminAuth()" title="관리자" style="display:none">🔮</button>
+<button class="admin-fab" id="adminFab" title="관리자" style="display:none">🔮</button>
 
 <!-- PW overlay -->
 <div class="pw-overlay" id="pwOverlay">
   <div class="pw-box">
     <h3>관리자 확인</h3>
-    <input class="pw-input" type="password" id="pwInput" placeholder="비밀번호"
-      onkeydown="if(event.key==='Enter')checkPw()">
+    <input class="pw-input" type="password" id="pwInput" placeholder="비밀번호">
     <div class="pw-err" id="pwErr">비밀번호가 틀렸습니다</div>
     <div class="pw-row">
-      <button onclick="closePw()">취소</button>
-      <button class="pw-ok" onclick="checkPw()">확인</button>
+      <button id="btnPwCancel">취소</button>
+      <button class="pw-ok" id="btnPwOk">확인</button>
     </div>
   </div>
 </div>
@@ -588,12 +587,26 @@ const CLIENT_NAME   = params.get('name')||'';
 const IS_CLIENT     = !!(CLIENT_DECK && CLIENT_SPREAD);
 
 window.addEventListener('DOMContentLoaded', ()=>{
+  // ── 공통 이벤트 ──
+  document.getElementById('btnPwCancel').addEventListener('click', closePw);
+  document.getElementById('btnPwOk').addEventListener('click', checkPw);
+  document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPw(); });
+
   if(IS_CLIENT){
     document.getElementById('clientPage').style.display='flex';
     document.getElementById('adminFab').style.display='flex';
+    document.getElementById('adminFab').addEventListener('click', openAdminAuth);
     initClient();
   } else {
     document.getElementById('adminPage').style.display='flex';
+    // 관리자 버튼 이벤트
+    document.getElementById('btnGenLink').addEventListener('click', generateLink);
+    document.getElementById('copyBtn').addEventListener('click', copyLink);
+    document.getElementById('clientNameInput').addEventListener('input', generateLink);
+    document.getElementById('kakaoInput').addEventListener('input', generateLink);
+    document.getElementById('btnToSetup').addEventListener('click', showAdminSetup);
+    document.getElementById('btnRefresh').addEventListener('click', loadResults);
+    document.getElementById('btnClearAll').addEventListener('click', clearAll);
     initAdmin();
   }
 });
@@ -843,7 +856,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     rb.className='btn-outline';
     rb.textContent='📋 신청 결과 보기';
     rb.style.cssText='position:fixed;bottom:20px;right:20px;z-index:200;';
-    rb.onclick=showAdminResults;
+    rb.addEventListener('click', showAdminResults);
     document.body.appendChild(rb);
   }
 });
