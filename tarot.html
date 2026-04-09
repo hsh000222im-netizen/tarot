@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -8,367 +9,153 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Noto+Serif+KR:wght@300;400;600;700&display=swap');
 
 :root {
-  --bg:      #07060f;
-  --bg2:     #10091f;
-  --bg3:     #170f2e;
-  --gold:    #c9a84c;
-  --gold2:   #f0d080;
-  --gold3:   #ffe9a0;
-  --purple:  #6a3fa0;
-  --lilac:   #c4b0f0;
-  --rose:    #d4789a;
-  --text:    #e8dfc8;
-  --muted:   #7a7060;
-  --glow:    rgba(201,168,76,0.22);
-  --glow2:   rgba(201,168,76,0.45);
-  --card-h:  140px;
-  --card-w:  84px;
+–bg:#07060f; –bg2:#10091f; –gold:#c9a84c; –gold2:#f0d080; –gold3:#ffe9a0;
+–purple:#6a3fa0; –lilac:#c4b0f0; –rose:#d4789a; –text:#e8dfc8; –muted:#7a7060;
+–glow:rgba(201,168,76,0.22); –glow2:rgba(201,168,76,0.45);
+–card-h:140px; –card-w:84px;
 }
+*{margin:0;padding:0;box-sizing:border-box;} html{scroll-behavior:smooth;}
+body{background:var(–bg);color:var(–text);font-family:‘Noto Serif KR’,serif;min-height:100vh;overflow-x:hidden;}
 
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Noto Serif KR',serif;
-  min-height:100vh;
-  overflow-x:hidden;
-}
-
-/* ─── STARFIELD ─────────────────────────── */
-.stars{
-  position:fixed;inset:0;pointer-events:none;z-index:0;
-  overflow:hidden;
-}
-.stars span{
-  position:absolute;border-radius:50%;
-  background:white;animation:twinkle var(--d,3s) var(--del,0s) infinite ease-in-out;
-}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.stars span{position:absolute;border-radius:50%;background:white;animation:twinkle var(–d,3s) var(–del,0s) infinite ease-in-out;}
 @keyframes twinkle{0%,100%{opacity:0.15;transform:scale(1);}50%{opacity:0.9;transform:scale(1.4);}}
-
-/* ─── FLOATING ORBS ─────────────────────── */
-.orb{
-  position:fixed;border-radius:50%;filter:blur(80px);
-  pointer-events:none;z-index:0;opacity:0.18;
-}
-.orb1{width:400px;height:400px;background:var(--purple);top:-100px;right:-100px;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;opacity:0.18;}
+.orb1{width:400px;height:400px;background:var(–purple);top:-100px;right:-100px;}
 .orb2{width:350px;height:350px;background:#1a2060;bottom:-80px;left:-80px;}
 .orb3{width:200px;height:200px;background:#601040;top:50%;left:40%;}
 
-/* ─── LAYOUT ────────────────────────────── */
 .page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:48px 20px 80px;}
 
-/* ─── LOGO ──────────────────────────────── */
 .logo-wrap{text-align:center;margin-bottom:36px;}
-.logo-mark{font-size:1.6rem;letter-spacing:.5em;color:var(--gold);opacity:.7;display:block;margin-bottom:4px;}
-.logo-title{
-  font-family:'Cinzel Decorative',serif;
-  font-size:clamp(1.6rem,5vw,2.8rem);
-  font-weight:900;
-  background:linear-gradient(135deg,var(--gold),var(--gold3),var(--gold));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  letter-spacing:.12em;
-  text-shadow:none;
-  display:block;
-}
-.logo-sub{font-size:.72rem;color:var(--muted);letter-spacing:.35em;text-transform:uppercase;margin-top:6px;display:block;}
+.logo-mark{font-size:1.6rem;letter-spacing:.5em;color:var(–gold);opacity:.7;display:block;margin-bottom:4px;}
+.logo-title{font-family:‘Cinzel Decorative’,serif;font-size:clamp(1.6rem,5vw,2.8rem);font-weight:900;background:linear-gradient(135deg,var(–gold),var(–gold3),var(–gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.12em;display:block;}
+.logo-sub{font-size:.72rem;color:var(–muted);letter-spacing:.35em;text-transform:uppercase;margin-top:6px;display:block;}
 
-/* ─── SECTION TITLE ─────────────────────── */
-.sec-title{
-  font-family:'Cinzel Decorative',serif;
-  font-size:.85rem;color:var(--gold);letter-spacing:.18em;
-  text-align:center;margin-bottom:18px;
-  display:flex;align-items:center;gap:10px;
-  width:100%;max-width:640px;
-}
-.sec-title::before,.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(201,168,76,.35),transparent);}
+.sec-title{font-family:‘Cinzel Decorative’,serif;font-size:.85rem;color:var(–gold);letter-spacing:.18em;text-align:center;margin-bottom:18px;display:flex;align-items:center;gap:10px;width:100%;max-width:640px;}
+.sec-title::before,.sec-title::after{content:’’;flex:1;height:1px;background:linear-gradient(to right,transparent,rgba(201,168,76,.35),transparent);}
 
-/* ─── CARD PANEL ────────────────────────── */
-.panel{
-  background:rgba(16,9,31,.7);
-  border:1px solid rgba(201,168,76,.18);
-  border-radius:16px;
-  padding:28px 24px;
-  width:100%;max-width:640px;
-  backdrop-filter:blur(12px);
-  margin-bottom:20px;
-}
+.panel{background:rgba(16,9,31,.7);border:1px solid rgba(201,168,76,.18);border-radius:16px;padding:28px 24px;width:100%;max-width:640px;backdrop-filter:blur(12px);margin-bottom:20px;}
 
-/* ─── DECK GRID ─────────────────────────── */
+/* deck */
 .deck-grid{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
-.deck-opt{
-  flex:1 1 140px;max-width:170px;
-  border:1px solid rgba(201,168,76,.2);
-  border-radius:12px;padding:18px 12px;text-align:center;cursor:pointer;
-  background:rgba(255,255,255,.03);
-  transition:all .25s;position:relative;overflow:hidden;
-}
-.deck-opt::after{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at top,rgba(201,168,76,.07),transparent 70%);
-  opacity:0;transition:opacity .25s;
-}
+.deck-opt{flex:1 1 140px;max-width:170px;border:1px solid rgba(201,168,76,.2);border-radius:12px;padding:18px 12px;text-align:center;cursor:pointer;background:rgba(255,255,255,.03);transition:all .25s;position:relative;overflow:hidden;}
 .deck-opt:hover{border-color:rgba(201,168,76,.55);transform:translateY(-3px);}
-.deck-opt:hover::after{opacity:1;}
-.deck-opt.active{
-  border-color:var(--gold2);
-  box-shadow:0 0 0 1px var(--gold2),0 6px 24px var(--glow2);
-  background:rgba(201,168,76,.06);
-}
+.deck-opt.active{border-color:var(–gold2);box-shadow:0 0 0 1px var(–gold2),0 6px 24px var(–glow2);background:rgba(201,168,76,.06);}
 .deck-icon{font-size:2rem;display:block;margin-bottom:8px;}
-.deck-name{font-family:'Cinzel Decorative',serif;font-size:.68rem;color:var(--gold);letter-spacing:.05em;display:block;}
-.deck-cnt{font-size:.65rem;color:var(--muted);margin-top:3px;display:block;}
+.deck-name{font-family:‘Cinzel Decorative’,serif;font-size:.68rem;color:var(–gold);letter-spacing:.05em;display:block;}
+.deck-cnt{font-size:.65rem;color:var(–muted);margin-top:3px;display:block;}
 
-/* ─── SPREAD GRID ───────────────────────── */
-.spread-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
-.spread-opt{
-  flex:1 1 120px;max-width:150px;
-  border:1px solid rgba(201,168,76,.18);border-radius:10px;
-  padding:12px 14px;text-align:center;cursor:pointer;
-  background:rgba(255,255,255,.02);
-  transition:all .22s;
-  font-family:'Noto Serif KR',serif;font-size:.82rem;color:var(--text);
-}
-.spread-opt small{display:block;font-size:.65rem;color:var(--muted);margin-top:3px;}
-.spread-opt:hover{border-color:rgba(201,168,76,.5);}
-.spread-opt.active{border-color:var(--gold2);color:var(--gold2);background:rgba(201,168,76,.07);}
+/* shuffle builder */
+.shuffle-builder{width:100%;max-width:640px;}
+.shuffle-row{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:12px 16px;margin-bottom:10px;}
+.shuffle-label{font-family:‘Cinzel Decorative’,serif;font-size:.72rem;color:var(–gold);min-width:70px;}
+.shuffle-input{background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.3);border-radius:7px;padding:8px 12px;color:var(–text);font-family:‘Noto Serif KR’,serif;font-size:.9rem;width:80px;outline:none;text-align:center;}
+.shuffle-input:focus{border-color:var(–gold);}
+.shuffle-desc{font-size:.72rem;color:var(–muted);flex:1;}
+.shuffle-del{background:none;border:1px solid rgba(224,112,112,.3);border-radius:6px;padding:5px 10px;color:#e07070;cursor:pointer;font-size:.75rem;transition:all .2s;}
+.shuffle-del:hover{background:rgba(224,112,112,.1);}
+.add-shuffle-btn{background:rgba(201,168,76,.08);border:1px dashed rgba(201,168,76,.3);border-radius:10px;padding:12px;width:100%;color:var(–gold);font-size:.82rem;cursor:pointer;transition:all .2s;margin-bottom:16px;}
+.add-shuffle-btn:hover{background:rgba(201,168,76,.15);}
 
-/* ─── LINK BOX ──────────────────────────── */
-.link-box{
-  display:flex;align-items:center;gap:10px;
-  background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.25);
-  border-radius:10px;padding:12px 16px;width:100%;
-}
-.link-url{
-  flex:1;font-size:.78rem;color:var(--lilac);
-  word-break:break-all;line-height:1.5;
-  font-family:'Courier New',monospace;
-}
-.copy-btn{
-  background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);
-  border-radius:8px;padding:8px 16px;color:var(--gold2);
-  cursor:pointer;font-size:.78rem;white-space:nowrap;
-  transition:all .2s;flex-shrink:0;
-}
+/* link box */
+.link-box{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.3);border:1px solid rgba(201,168,76,.25);border-radius:10px;padding:12px 16px;width:100%;}
+.link-url{flex:1;font-size:.78rem;color:var(–lilac);word-break:break-all;line-height:1.5;font-family:‘Courier New’,monospace;}
+.copy-btn{background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:8px;padding:8px 16px;color:var(–gold2);cursor:pointer;font-size:.78rem;white-space:nowrap;transition:all .2s;flex-shrink:0;}
 .copy-btn:hover{background:rgba(201,168,76,.28);}
 .copy-btn.copied{background:rgba(80,200,80,.15);border-color:rgba(80,200,80,.4);color:#a0e8a0;}
 
-/* ─── PRIMARY BUTTON ────────────────────── */
-.btn{
-  background:linear-gradient(135deg,#6b4500,var(--gold),#6b4500);
-  border:none;border-radius:10px;
-  padding:14px 36px;
-  color:#07060f;font-family:'Cinzel Decorative',serif;
-  font-size:.85rem;font-weight:700;letter-spacing:.05em;
-  cursor:pointer;transition:all .3s;
-  box-shadow:0 4px 20px var(--glow);
-}
-.btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(--glow2);}
+/* buttons */
+.btn{background:linear-gradient(135deg,#6b4500,var(–gold),#6b4500);border:none;border-radius:10px;padding:14px 36px;color:#07060f;font-family:‘Cinzel Decorative’,serif;font-size:.85rem;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px var(–glow);}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px var(–glow2);}
 .btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
-.btn-outline{
-  background:transparent;border:1px solid rgba(201,168,76,.35);
-  border-radius:10px;padding:10px 24px;
-  color:var(--gold);font-size:.8rem;cursor:pointer;transition:all .2s;
-}
-.btn-outline:hover{border-color:var(--gold);background:rgba(201,168,76,.08);}
+.btn-outline{background:transparent;border:1px solid rgba(201,168,76,.35);border-radius:10px;padding:10px 24px;color:var(–gold);font-size:.8rem;cursor:pointer;transition:all .2s;}
+.btn-outline:hover{border-color:var(–gold);background:rgba(201,168,76,.08);}
 
-/* ─── CARD BOARD (CLIENT) ───────────────── */
-.board-meta{text-align:center;margin-bottom:24px;}
-.board-deck{
-  font-family:'Cinzel Decorative',serif;font-size:1rem;
-  color:var(--gold2);margin-bottom:6px;
-}
-.board-spread{font-size:.78rem;color:var(--muted);}
+/* card board */
+.board-meta{text-align:center;margin-bottom:16px;}
+.board-deck{font-family:‘Cinzel Decorative’,serif;font-size:1rem;color:var(–gold2);margin-bottom:4px;}
+.board-spread{font-size:.78rem;color:var(–muted);}
+.shuffle-progress{display:flex;gap:6px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}
+.progress-dot{width:28px;height:6px;border-radius:3px;background:rgba(201,168,76,.2);transition:all .3s;}
+.progress-dot.done{background:var(–gold);}
+.progress-dot.active{background:var(–gold2);box-shadow:0 0 8px var(–glow2);}
 
-.pick-pill{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);
-  border-radius:24px;padding:7px 22px;font-size:.82rem;color:var(--gold2);
-  margin-bottom:24px;
-}
-.pick-pip{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;}
+.pick-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:24px;padding:7px 22px;font-size:.82rem;color:var(–gold2);margin-bottom:20px;}
+.pick-pip{width:8px;height:8px;border-radius:50%;background:var(–gold);display:inline-block;}
 
-.cards-sea{
-  width:100%;max-width:860px;
-  display:flex;flex-wrap:wrap;gap:9px;justify-content:center;
-  padding:10px;
-}
+.cards-sea{width:100%;max-width:860px;display:flex;flex-wrap:wrap;gap:9px;justify-content:center;padding:10px;}
 
-/* individual card */
-.tc{
-  width:var(--card-w);height:var(--card-h);
-  perspective:700px;cursor:pointer;flex-shrink:0;
-  transition:transform .15s;
-}
+/* tarot card */
+.tc{width:var(–card-w);height:var(–card-h);perspective:700px;cursor:pointer;flex-shrink:0;transition:transform .15s;}
 .tc:not(.flipped):not(.disabled):hover{transform:translateY(-6px) scale(1.04);}
-
-.tc-inner{
-  width:100%;height:100%;position:relative;
-  transform-style:preserve-3d;
-  transition:transform .65s cubic-bezier(.4,0,.2,1);
-  border-radius:9px;
-}
+.tc-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1);border-radius:9px;}
 .tc.flipped .tc-inner{transform:rotateY(180deg);}
-
-.tc-face{
-  position:absolute;inset:0;border-radius:9px;
-  backface-visibility:hidden;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  overflow:hidden;
-}
-
-/* back */
-.tc-back{
-  background:linear-gradient(160deg,#1a1035,#0f0823);
-  border:1px solid rgba(201,168,76,.28);
-  box-shadow:0 2px 12px rgba(0,0,0,.6);
-}
-.tc-back-inner{
-  position:absolute;inset:5px;border-radius:6px;
-  border:1px solid rgba(201,168,76,.12);
-  background:
-    repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(201,168,76,.03) 5px,rgba(201,168,76,.03) 6px),
-    repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(106,63,160,.05) 5px,rgba(106,63,160,.05) 6px);
-}
-.tc-back-star{
-  position:relative;z-index:1;font-size:1.3rem;
-  color:rgba(201,168,76,.45);
-}
-.tc:not(.flipped):not(.disabled) .tc-back{
-  cursor:pointer;
-}
-.tc:not(.flipped):not(.disabled):hover .tc-back{
-  border-color:var(--gold2);
-  box-shadow:0 0 18px var(--glow2),0 2px 12px rgba(0,0,0,.6);
-}
-.tc.flipped .tc-back{border-color:var(--gold);}
+.tc-face{position:absolute;inset:0;border-radius:9px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
+.tc-back{background:linear-gradient(160deg,#1a1035,#0f0823);border:1px solid rgba(201,168,76,.28);box-shadow:0 2px 12px rgba(0,0,0,.6);}
+.tc-back-inner{position:absolute;inset:5px;border-radius:6px;border:1px solid rgba(201,168,76,.12);background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(201,168,76,.03) 5px,rgba(201,168,76,.03) 6px),repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(106,63,160,.05) 5px,rgba(106,63,160,.05) 6px);}
+.tc-back-star{position:relative;z-index:1;font-size:1.3rem;color:rgba(201,168,76,.45);}
+.tc:not(.flipped):not(.disabled):hover .tc-back{border-color:var(–gold2);box-shadow:0 0 18px var(–glow2),0 2px 12px rgba(0,0,0,.6);}
 .tc.disabled:not(.flipped) .tc-back{opacity:.4;cursor:default;}
+.tc-front{transform:rotateY(180deg);background:linear-gradient(160deg,#231640,#1a0d35);border:1px solid var(–gold);box-shadow:0 0 22px var(–glow),0 2px 10px rgba(0,0,0,.5);gap:3px;}
+.tc-order{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:.5rem;color:var(–gold);font-family:‘Cinzel Decorative’,serif;}
+.tc-sym{font-size:1.9rem;} .tc-num{font-size:.5rem;color:var(–gold2);font-family:‘Cinzel Decorative’,serif;}
+.tc-label{font-size:.42rem;color:var(–lilac);text-align:center;padding:0 5px;line-height:1.3;}
 
-/* front */
-.tc-front{
-  transform:rotateY(180deg);
-  background:linear-gradient(160deg,#231640,#1a0d35);
-  border:1px solid var(--gold);
-  box-shadow:0 0 22px var(--glow),0 2px 10px rgba(0,0,0,.5);
-  gap:3px;
-}
-.tc-order{
-  position:absolute;top:5px;left:0;right:0;
-  text-align:center;font-size:.5rem;color:var(--gold);
-  font-family:'Cinzel Decorative',serif;
-}
-.tc-sym{font-size:1.9rem;}
-.tc-num{font-size:.5rem;color:var(--gold2);font-family:'Cinzel Decorative',serif;}
-.tc-label{font-size:.42rem;color:var(--lilac);text-align:center;padding:0 5px;line-height:1.3;}
+/* result */
+.result-item{background:rgba(255,255,255,.025);border:1px solid rgba(201,168,76,.15);border-radius:12px;padding:18px;margin-bottom:12px;}
+.result-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.result-name{font-size:.9rem;color:var(–gold2);font-weight:600;}
+.result-time{font-size:.68rem;color:var(–muted);}
+.result-row{font-size:.75rem;color:var(–muted);margin-bottom:4px;}
+.result-row span{color:var(–text);}
+.shuffle-section{margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.03);border-radius:8px;border-left:2px solid rgba(201,168,76,.3);margin-bottom:6px;}
+.shuffle-section-title{font-size:.72rem;color:var(–gold);margin-bottom:6px;font-family:‘Cinzel Decorative’,serif;}
+.cards-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{background:rgba(106,63,160,.2);border:1px solid rgba(196,176,240,.2);border-radius:6px;padding:4px 10px;font-size:.7rem;color:var(–lilac);}
+.badge-new{background:rgba(212,120,154,.2);border:1px solid rgba(212,120,154,.4);border-radius:4px;padding:2px 8px;font-size:.62rem;color:var(–rose);}
+.no-result{text-align:center;color:var(–muted);padding:32px;font-size:.85rem;}
 
-/* ─── RESULT LIST (ADMIN) ───────────────── */
-.result-item{
-  background:rgba(255,255,255,.025);
-  border:1px solid rgba(201,168,76,.15);
-  border-radius:12px;padding:18px;margin-bottom:12px;
-}
-.result-item-head{
-  display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
-}
-.result-name{font-size:.9rem;color:var(--gold2);font-weight:600;}
-.result-time{font-size:.68rem;color:var(--muted);}
-.result-row{font-size:.75rem;color:var(--muted);margin-bottom:4px;}
-.result-row span{color:var(--text);}
-.cards-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-.chip{
-  background:rgba(106,63,160,.2);border:1px solid rgba(196,176,240,.2);
-  border-radius:6px;padding:4px 10px;font-size:.7rem;color:var(--lilac);
-}
-.result-q{
-  font-size:.75rem;color:var(--text);margin-top:8px;
-  padding:8px 12px;background:rgba(255,255,255,.03);border-radius:7px;
-  line-height:1.6;border-left:2px solid rgba(201,168,76,.3);
-}
-.badge-new{
-  background:rgba(212,120,154,.2);border:1px solid rgba(212,120,154,.4);
-  border-radius:4px;padding:2px 8px;font-size:.62rem;color:var(--rose);
-}
-
-.no-result{text-align:center;color:var(--muted);padding:32px;font-size:.85rem;}
-
-/* ─── DONE SCREEN ───────────────────────── */
-.done-box{
-  text-align:center;
-  background:rgba(16,9,31,.8);border:1px solid var(--gold);
-  border-radius:18px;padding:40px 28px;
-  max-width:500px;width:100%;
-  box-shadow:0 0 50px var(--glow);
-}
-.done-icon{font-size:3.5rem;display:block;margin-bottom:12px;
-  animation:float 3s ease-in-out infinite;}
+/* done */
+.done-box{text-align:center;background:rgba(16,9,31,.8);border:1px solid var(–gold);border-radius:18px;padding:40px 28px;max-width:540px;width:100%;box-shadow:0 0 50px var(–glow);}
+.done-icon{font-size:3.5rem;display:block;margin-bottom:12px;animation:float 3s ease-in-out infinite;}
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-.done-title{font-family:'Cinzel Decorative',serif;font-size:1.3rem;color:var(--gold2);margin-bottom:8px;}
-.done-msg{font-size:.82rem;color:var(--muted);line-height:1.9;margin-bottom:20px;}
-.done-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:16px 0;}
-.done-chip{
-  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);
-  border-radius:8px;padding:6px 14px;font-size:.75rem;color:var(--gold);
-}
+.done-title{font-family:‘Cinzel Decorative’,serif;font-size:1.3rem;color:var(–gold2);margin-bottom:8px;}
+.done-msg{font-size:.82rem;color:var(–muted);line-height:1.9;margin-bottom:20px;}
+.done-shuffle-block{text-align:left;background:rgba(255,255,255,.03);border:1px solid rgba(201,168,76,.15);border-radius:10px;padding:14px 16px;margin-bottom:10px;width:100%;}
+.done-shuffle-title{font-size:.75rem;color:var(–gold);font-family:‘Cinzel Decorative’,serif;margin-bottom:8px;}
+.done-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.done-chip{background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:5px 12px;font-size:.73rem;color:var(–gold);}
 
-/* ─── PW OVERLAY ────────────────────────── */
-.pw-overlay{
-  position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);
-  display:none;align-items:center;justify-content:center;padding:20px;
-}
+/* pw */
+.pw-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px;}
 .pw-overlay.open{display:flex;}
-.pw-box{
-  background:var(--bg2);border:1px solid var(--gold);border-radius:16px;
-  padding:32px;max-width:320px;width:100%;text-align:center;
-}
-.pw-box h3{font-family:'Cinzel Decorative',serif;color:var(--gold);font-size:.9rem;margin-bottom:18px;}
-.pw-input{
-  width:100%;background:rgba(255,255,255,.05);
-  border:1px solid rgba(201,168,76,.3);border-radius:8px;
-  padding:12px;color:var(--text);font-size:1rem;
-  outline:none;text-align:center;letter-spacing:.2em;margin-bottom:12px;
-}
+.pw-box{background:var(–bg2);border:1px solid var(–gold);border-radius:16px;padding:32px;max-width:320px;width:100%;text-align:center;}
+.pw-box h3{font-family:‘Cinzel Decorative’,serif;color:var(–gold);font-size:.9rem;margin-bottom:18px;}
+.pw-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(201,168,76,.3);border-radius:8px;padding:12px;color:var(–text);font-size:1rem;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:12px;}
 .pw-err{font-size:.72rem;color:#e07070;margin-bottom:10px;display:none;}
 .pw-row{display:flex;gap:8px;justify-content:center;}
-.pw-row button{
-  background:none;border:1px solid rgba(255,255,255,.2);
-  border-radius:8px;padding:9px 20px;color:var(--text);
-  cursor:pointer;font-size:.8rem;transition:all .2s;
-}
-.pw-row .pw-ok{background:rgba(201,168,76,.15);color:var(--gold2);border-color:rgba(201,168,76,.35);}
-.pw-row button:hover{background:rgba(255,255,255,.07);}
+.pw-row button{background:none;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:9px 20px;color:var(–text);cursor:pointer;font-size:.8rem;transition:all .2s;}
+.pw-row .pw-ok{background:rgba(201,168,76,.15);color:var(–gold2);border-color:rgba(201,168,76,.35);}
 
-/* ─── ADMIN NAV BTN ─────────────────────── */
-.admin-fab{
-  position:fixed;bottom:20px;right:20px;z-index:200;
-  background:rgba(16,9,31,.9);border:1px solid rgba(201,168,76,.3);
-  border-radius:50%;width:48px;height:48px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:1.3rem;
-  box-shadow:0 4px 20px rgba(0,0,0,.5);
-  transition:all .2s;
-}
-.admin-fab:hover{border-color:var(--gold);box-shadow:0 4px 20px var(--glow);}
+.admin-fab{position:fixed;bottom:20px;right:20px;z-index:200;background:rgba(16,9,31,.9);border:1px solid rgba(201,168,76,.3);border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.3rem;box-shadow:0 4px 20px rgba(0,0,0,.5);transition:all .2s;}
+.admin-fab:hover{border-color:var(–gold);}
 
-/* ─── ANIMATIONS ────────────────────────── */
 @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 .fade-up{animation:fadeUp .5s ease both;}
 .d1{animation-delay:.05s;}.d2{animation-delay:.1s;}.d3{animation-delay:.15s;}.d4{animation-delay:.2s;}
 
-@keyframes shimmer{0%,100%{opacity:.5;}50%{opacity:1;}}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{opacity:1;}
 </style>
+
 </head>
 <body>
-
-<!-- stars -->
 <div class="stars" id="stars"></div>
 <div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
 
-<!-- ══════════════════════════════════════════════════
-     ADMIN PAGE  (no URL params)
-══════════════════════════════════════════════════ -->
-<div class="page" id="adminPage" style="display:none">
+<!-- ══════ ADMIN PAGE ══════ -->
 
-  <!-- ADMIN: SETUP TAB -->
+<div class="page" id="adminPage" style="display:none">
   <div id="adminSetup">
     <div class="logo-wrap fade-up">
       <span class="logo-mark">✦ ✦ ✦</span>
@@ -376,83 +163,52 @@ body{
       <span class="logo-sub">관리자 · 덱 설정</span>
     </div>
 
-    <div class="panel fade-up d1">
-      <div class="sec-title">덱 선택</div>
-      <div class="deck-grid" id="adminDeckGrid">
-        <div class="deck-opt" data-deck="rws">
-          <span class="deck-icon">🌟</span>
-          <span class="deck-name">Rider-Waite</span>
-          <span class="deck-cnt">78장</span>
-        </div>
-        <div class="deck-opt" data-deck="osho">
-          <span class="deck-icon">🌸</span>
-          <span class="deck-name">Osho Zen</span>
-          <span class="deck-cnt">79장</span>
-        </div>
-        <div class="deck-opt" data-deck="thoth">
-          <span class="deck-icon">🔮</span>
-          <span class="deck-name">Thoth</span>
-          <span class="deck-cnt">78장</span>
-        </div>
-        <div class="deck-opt" data-deck="oracle">
-          <span class="deck-icon">🌙</span>
-          <span class="deck-name">Moon Oracle</span>
-          <span class="deck-cnt">44장</span>
-        </div>
-      </div>
-    </div>
+```
+<div class="panel fade-up d1">
+  <div class="sec-title">덱 선택</div>
+  <div class="deck-grid" id="adminDeckGrid">
+    <div class="deck-opt" data-deck="rws"><span class="deck-icon">🌟</span><span class="deck-name">Rider-Waite</span><span class="deck-cnt">78장</span></div>
+    <div class="deck-opt" data-deck="osho"><span class="deck-icon">🌸</span><span class="deck-name">Osho Zen</span><span class="deck-cnt">79장</span></div>
+    <div class="deck-opt" data-deck="thoth"><span class="deck-icon">🔮</span><span class="deck-name">Thoth</span><span class="deck-cnt">78장</span></div>
+    <div class="deck-opt" data-deck="oracle"><span class="deck-icon">🌙</span><span class="deck-name">Moon Oracle</span><span class="deck-cnt">44장</span></div>
+  </div>
+</div>
 
-    <div class="panel fade-up d2">
-      <div class="sec-title">뽑을 카드 수</div>
-      <div class="spread-grid" id="adminSpreadGrid">
-        <div class="spread-opt" data-spread="1" data-label="원 카드">원 카드<small>1장</small></div>
-        <div class="spread-opt" data-spread="3" data-label="쓰리 카드">쓰리 카드<small>3장</small></div>
-        <div class="spread-opt" data-spread="4" data-label="포 카드">포 카드<small>4장</small></div>
-        <div class="spread-opt" data-spread="5" data-label="켈틱 (간략)">켈틱 크로스<small>5장</small></div>
-        <div class="spread-opt" data-spread="10" data-label="켈틱 (풀)">켈틱 풀<small>10장</small></div>
-      </div>
-    </div>
+<div class="panel fade-up d2" id="shufflePanel" style="display:none">
+  <div class="sec-title">셔플 설정</div>
+  <div id="shuffleRows"></div>
+  <button class="add-shuffle-btn" id="btnAddShuffle">+ 셔플 추가 (최대 10개)</button>
+</div>
 
-    <div class="panel fade-up d3" id="linkPanel" style="display:none">
-      <div class="sec-title">내담자 정보</div>
-      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
-        <div style="flex:1;min-width:160px;">
-          <label style="font-size:.72rem;color:var(--gold);letter-spacing:.1em;display:block;margin-bottom:6px;">내담자 이름 ✦ 필수</label>
-          <input type="text" id="clientNameInput"
-            style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.4);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.84rem;outline:none;"
-            placeholder="예: 김지수">
-        </div>
-        <div style="flex:1;min-width:160px;">
-          <label style="font-size:.72rem;color:var(--gold);letter-spacing:.1em;display:block;margin-bottom:6px;">카카오 채널 URL (선택)</label>
-          <input type="text" id="kakaoInput"
-            style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.84rem;outline:none;"
-            placeholder="https://pf.kakao.com/...">
-        </div>
-      </div>
-      <div class="sec-title">생성된 링크</div>
-      <div id="linkWaiting" style="font-size:.75rem;color:var(--muted);text-align:center;padding:12px 0;">
-        ✦ 위에 이름을 입력하면 링크가 생성됩니다
-      </div>
-      <div class="link-box" id="linkBox" style="display:none;">
-        <span class="link-url" id="generatedLink">—</span>
-        <button class="copy-btn" id="copyBtn">복사</button>
-      </div>
-      <p id="linkHint" style="font-size:.7rem;color:var(--muted);margin-top:10px;text-align:center;display:none;">
-        이 링크를 해당 내담자에게만 전달하세요. 다음 내담자는 이름을 바꿔 새 링크를 생성하세요.
-      </p>
+<div class="panel fade-up d3" id="linkPanel" style="display:none">
+  <div class="sec-title">내담자 정보</div>
+  <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:160px;">
+      <label style="font-size:.72rem;color:var(--gold);letter-spacing:.1em;display:block;margin-bottom:6px;">내담자 이름 ✦ 필수</label>
+      <input type="text" id="clientNameInput" style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.4);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.84rem;outline:none;" placeholder="예: 김지수">
     </div>
+  </div>
+  <div class="sec-title">생성된 링크</div>
+  <div id="linkWaiting" style="font-size:.75rem;color:var(--muted);text-align:center;padding:12px 0;">✦ 위에 이름을 입력하면 링크가 생성됩니다</div>
+  <div class="link-box" id="linkBox" style="display:none;">
+    <span class="link-url" id="generatedLink">—</span>
+    <button class="copy-btn" id="copyBtn">복사</button>
+  </div>
+  <p id="linkHint" style="font-size:.7rem;color:var(--muted);margin-top:10px;text-align:center;display:none;">이 링크를 해당 내담자에게만 전달하세요.</p>
+</div>
 
-    <button class="btn fade-up d4" id="btnGenLink" disabled style="margin-bottom:24px;">링크 생성 ✦</button>
+<button class="btn fade-up d4" id="btnGenLink" disabled style="margin-bottom:24px;">링크 생성 ✦</button>
+```
+
   </div>
 
-  <!-- ADMIN: RESULTS TAB -->
   <div id="adminResults" style="display:none">
     <div class="logo-wrap fade-up">
       <span class="logo-mark">✦ ✦ ✦</span>
       <span class="logo-title">Arcana</span>
       <span class="logo-sub">관리자 · 상담 결과</span>
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:24px;" class="fade-up">
+    <div style="display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;" class="fade-up">
       <button class="btn-outline" id="btnToSetup">← 덱 설정으로</button>
       <button class="btn-outline" id="btnRefresh" style="margin-left:auto;">새로고침</button>
       <button class="btn-outline" id="btnClearAll" style="color:#e07070;border-color:rgba(224,112,112,.35);">전체 삭제</button>
@@ -461,12 +217,9 @@ body{
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     CLIENT PAGE  (has URL params)
-══════════════════════════════════════════════════ -->
-<div class="page" id="clientPage" style="display:none">
+<!-- ══════ CLIENT PAGE ══════ -->
 
-  <!-- STEP 1: CARD PICK -->
+<div class="page" id="clientPage" style="display:none">
   <div id="clientPick">
     <div class="logo-wrap fade-up">
       <span class="logo-mark">✦ ✦ ✦</span>
@@ -477,34 +230,28 @@ body{
       <div class="board-deck" id="clientDeckName">—</div>
       <div class="board-spread" id="clientSpreadName">—</div>
     </div>
-    <div class="pick-pill fade-up d1">
+    <div class="shuffle-progress fade-up d1" id="shuffleProgress"></div>
+    <div class="pick-pill fade-up d2">
       <span class="pick-pip"></span>
       <span id="pickStatus">0 / 0 장 선택됨</span>
     </div>
-    <p style="font-size:.75rem;color:var(--muted);margin-bottom:22px;text-align:center;" class="fade-up d2">
-      마음이 끌리는 카드를 클릭해서 선택하세요
-    </p>
+    <p style="font-size:.75rem;color:var(--muted);margin-bottom:22px;text-align:center;" class="fade-up d2">마음이 끌리는 카드를 클릭해서 선택하세요</p>
     <div class="cards-sea" id="cardsSea"></div>
-    <button class="btn fade-up" id="btnToForm" disabled style="margin-top:32px;">선택 완료 ✦</button>
+    <button class="btn fade-up" id="btnNext" disabled style="margin-top:32px;">다음 ✦</button>
   </div>
 
-
-
-  <!-- STEP 2: DONE -->
   <div id="clientDone" style="display:none">
     <div class="done-box fade-up">
       <span class="done-icon">✨</span>
       <div class="done-title" id="doneName">카드 선택 완료</div>
       <p class="done-msg">선택하신 카드가 전달되었습니다.</p>
-      <div class="done-chips" id="doneChips"></div>
+      <div id="doneShuffles" style="width:100%;"></div>
     </div>
   </div>
 </div>
 
-<!-- admin access button (client side only) -->
 <button class="admin-fab" id="adminFab" title="관리자" style="display:none">🔮</button>
 
-<!-- PW overlay -->
 <div class="pw-overlay" id="pwOverlay">
   <div class="pw-box">
     <h3>관리자 확인</h3>
@@ -518,7 +265,6 @@ body{
 </div>
 
 <script type="module">
-/* ─── FIREBASE 설정 ──────────────────────────────────── */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, collection, addDoc, getDocs, orderBy, query, deleteDoc, doc }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -534,58 +280,49 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
 
-/* ─── CONFIG ────────────────────────────────────────── */
-const ADMIN_PW = '1234'; // ← 비밀번호 변경
+const ADMIN_PW = '1234';
 
-/* ─── DECK DATA ─────────────────────────────────────── */
+/* ── DECK DATA ── */
 const DECKS = {
-  rws:{
-    name:'Rider-Waite',icon:'🌟',
-    cards:[
-      {n:'0',s:'🌟',l:'The Fool'},{n:'I',s:'⚡',l:'The Magician'},{n:'II',s:'🌙',l:'High Priestess'},
-      {n:'III',s:'🌸',l:'The Empress'},{n:'IV',s:'👑',l:'The Emperor'},{n:'V',s:'⛪',l:'Hierophant'},
-      {n:'VI',s:'💫',l:'The Lovers'},{n:'VII',s:'🏆',l:'The Chariot'},{n:'VIII',s:'🦁',l:'Strength'},
-      {n:'IX',s:'🕯️',l:'The Hermit'},{n:'X',s:'☸️',l:'Wheel of Fortune'},{n:'XI',s:'⚖️',l:'Justice'},
-      {n:'XII',s:'🔄',l:'Hanged Man'},{n:'XIII',s:'🌑',l:'Death'},{n:'XIV',s:'🌊',l:'Temperance'},
-      {n:'XV',s:'🔥',l:'The Devil'},{n:'XVI',s:'⚡',l:'The Tower'},{n:'XVII',s:'⭐',l:'The Star'},
-      {n:'XVIII',s:'🌕',l:'The Moon'},{n:'XIX',s:'☀️',l:'The Sun'},{n:'XX',s:'🎺',l:'Judgement'},
-      {n:'XXI',s:'🌍',l:'The World'},
-      ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`W${i+1}`,s:'🔥',l:`${v} of Wands`})),
-      ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`C${i+1}`,s:'💧',l:`${v} of Cups`})),
-      ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`S${i+1}`,s:'⚔️',l:`${v} of Swords`})),
-      ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`P${i+1}`,s:'💰',l:`${v} of Pentacles`})),
-    ]
-  },
+  rws:{name:'Rider-Waite',icon:'🌟',cards:[
+    {n:'0',s:'🌟',l:'The Fool'},{n:'I',s:'⚡',l:'The Magician'},{n:'II',s:'🌙',l:'High Priestess'},
+    {n:'III',s:'🌸',l:'The Empress'},{n:'IV',s:'👑',l:'The Emperor'},{n:'V',s:'⛪',l:'Hierophant'},
+    {n:'VI',s:'💫',l:'The Lovers'},{n:'VII',s:'🏆',l:'The Chariot'},{n:'VIII',s:'🦁',l:'Strength'},
+    {n:'IX',s:'🕯️',l:'The Hermit'},{n:'X',s:'☸️',l:'Wheel of Fortune'},{n:'XI',s:'⚖️',l:'Justice'},
+    {n:'XII',s:'🔄',l:'Hanged Man'},{n:'XIII',s:'🌑',l:'Death'},{n:'XIV',s:'🌊',l:'Temperance'},
+    {n:'XV',s:'🔥',l:'The Devil'},{n:'XVI',s:'⚡',l:'The Tower'},{n:'XVII',s:'⭐',l:'The Star'},
+    {n:'XVIII',s:'🌕',l:'The Moon'},{n:'XIX',s:'☀️',l:'The Sun'},{n:'XX',s:'🎺',l:'Judgement'},
+    {n:'XXI',s:'🌍',l:'The World'},
+    ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`W${i+1}`,s:'🔥',l:`${v} of Wands`})),
+    ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`C${i+1}`,s:'💧',l:`${v} of Cups`})),
+    ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`S${i+1}`,s:'⚔️',l:`${v} of Swords`})),
+    ...['Ace','2','3','4','5','6','7','8','9','10','Page','Knight','Queen','King'].map((v,i)=>({n:`P${i+1}`,s:'💰',l:`${v} of Pentacles`})),
+  ]},
   osho:{name:'Osho Zen',icon:'🌸',cards:[...[...Array(79)].map((_,i)=>({n:`${i+1}`,s:'🌸',l:`Osho Card ${i+1}`}))]},
   thoth:{name:'Thoth',icon:'🔮',cards:[...[...Array(78)].map((_,i)=>({n:`${i+1}`,s:'🔮',l:`Thoth ${i+1}`}))]},
   oracle:{name:'Moon Oracle',icon:'🌙',cards:[...[...Array(44)].map((_,i)=>({n:`${i+1}`,s:'🌙',l:`Moon Card ${i+1}`}))]},
 };
 
-/* ─── STARS ─────────────────────────────────────────── */
-(function(){
+/* ── STARS ── */
+(()=>{
   const c=document.getElementById('stars');
   for(let i=0;i<80;i++){
     const s=document.createElement('span');
     const sz=Math.random()*2+0.5;
-    s.style.cssText=`
-      width:${sz}px;height:${sz}px;
-      top:${Math.random()*100}%;left:${Math.random()*100}%;
-      --d:${2+Math.random()*4}s;--del:${Math.random()*5}s;
-      opacity:${0.1+Math.random()*0.5};
-    `;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--del:${Math.random()*5}s;opacity:${0.1+Math.random()*0.5};`;
     c.appendChild(s);
   }
 })();
 
-/* ─── ROUTING ────────────────────────────────────────── */
-const params = new URLSearchParams(location.search);
-const CLIENT_DECK   = params.get('deck');
-const CLIENT_SPREAD = parseInt(params.get('spread')||'0');
-const CLIENT_NAME   = params.get('name')||'';
-const IS_CLIENT     = !!(CLIENT_DECK && CLIENT_SPREAD);
+/* ── ROUTING ── */
+const params       = new URLSearchParams(location.search);
+const CLIENT_DECK  = params.get('deck');
+const CLIENT_NAME  = params.get('name')||'';
+// shuffles encoded as "5,3,1" in URL param
+const CLIENT_SHUFFLES = (params.get('shuffles')||'').split(',').map(Number).filter(n=>n>0);
+const IS_CLIENT    = !!(CLIENT_DECK && CLIENT_SHUFFLES.length);
 
 window.addEventListener('DOMContentLoaded', ()=>{
-  // ── 공통 이벤트 ──
   document.getElementById('btnPwCancel').addEventListener('click', closePw);
   document.getElementById('btnPwOk').addEventListener('click', checkPw);
   document.getElementById('pwInput').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPw(); });
@@ -594,106 +331,116 @@ window.addEventListener('DOMContentLoaded', ()=>{
     document.getElementById('clientPage').style.display='flex';
     document.getElementById('adminFab').style.display='flex';
     document.getElementById('adminFab').addEventListener('click', openAdminAuth);
-    document.getElementById('btnToForm').addEventListener('click', async ()=>{
-      const deck=DECKS[CLIENT_DECK];
-      const rec={
-        id:Date.now(),
-        datetime:new Date().toLocaleString('ko-KR'),
-        clientName: CLIENT_NAME || '(이름 없음)',
-        deckName:deck.name,
-        spreadLabel:`${CLIENT_SPREAD}장`,
-        cards:picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`),
-      };
-      try {
-        await addDoc(collection(db,'readings'), rec);
-      } catch(e) {
-        console.error('저장 실패:', e);
-      }
-      document.getElementById('doneChips').innerHTML=
-        picked.map(c=>`<span class="done-chip">${c.order}번째 ${c.s} ${c.l}</span>`).join('');
-      const doneTitle=document.getElementById('doneName');
-      if(doneTitle) doneTitle.textContent=CLIENT_NAME?`${CLIENT_NAME}님, 선택 완료!`:'카드 선택 완료';
-      document.getElementById('clientPick').style.display='none';
-      document.getElementById('clientDone').style.display='flex';
-      document.getElementById('clientDone').style.flexDirection='column';
-      document.getElementById('clientDone').style.alignItems='center';
-      window.scrollTo(0,0);
-    });
     initClient();
   } else {
     document.getElementById('adminPage').style.display='flex';
-    // 관리자 버튼 이벤트
     document.getElementById('btnGenLink').addEventListener('click', generateLink);
     document.getElementById('copyBtn').addEventListener('click', copyLink);
     document.getElementById('clientNameInput').addEventListener('input', generateLink);
-    document.getElementById('kakaoInput').addEventListener('input', generateLink);
     document.getElementById('btnToSetup').addEventListener('click', showAdminSetup);
     document.getElementById('btnRefresh').addEventListener('click', loadResults);
     document.getElementById('btnClearAll').addEventListener('click', clearAll);
+    document.getElementById('btnAddShuffle').addEventListener('click', addShuffleRow);
     initAdmin();
   }
 });
 
-/* ═══════════════════════════════════════════════════════
-   ADMIN LOGIC
-═══════════════════════════════════════════════════════ */
-let adminState={deck:null,spread:null};
+/* ══════════════════════════════════════
+   ADMIN
+══════════════════════════════════════ */
+let adminState = { deck: null };
+let shuffleCount = 0;
 
 function initAdmin(){
   document.querySelectorAll('#adminDeckGrid .deck-opt').forEach(el=>{
-    el.addEventListener('click',()=>{
+    el.addEventListener('click', ()=>{
       document.querySelectorAll('#adminDeckGrid .deck-opt').forEach(e=>e.classList.remove('active'));
       el.classList.add('active');
-      adminState.deck=el.dataset.deck;
+      adminState.deck = el.dataset.deck;
+      // show shuffle panel and add first row if empty
+      document.getElementById('shufflePanel').style.display='block';
+      if(shuffleCount === 0) addShuffleRow();
       checkAdminReady();
     });
   });
-  document.querySelectorAll('#adminSpreadGrid .spread-opt').forEach(el=>{
-    el.addEventListener('click',()=>{
-      document.querySelectorAll('#adminSpreadGrid .spread-opt').forEach(e=>e.classList.remove('active'));
-      el.classList.add('active');
-      adminState.spread=parseInt(el.dataset.spread);
-      checkAdminReady();
-    });
+}
+
+function addShuffleRow(){
+  if(shuffleCount >= 10) return;
+  shuffleCount++;
+  const idx = shuffleCount;
+  const row = document.createElement('div');
+  row.className = 'shuffle-row';
+  row.id = `shuffleRow${idx}`;
+  row.innerHTML = `
+    <span class="shuffle-label">${idx}번 셔플</span>
+    <input class="shuffle-input" type="number" id="shuffleInput${idx}" min="1" max="15" value="3" placeholder="장 수">
+    <span class="shuffle-desc">장 뽑기</span>
+    ${idx > 1 ? `<button class="shuffle-del" data-idx="${idx}">삭제</button>` : ''}
+  `;
+  document.getElementById('shuffleRows').appendChild(row);
+  row.querySelector('.shuffle-input').addEventListener('input', generateLink);
+  const delBtn = row.querySelector('.shuffle-del');
+  if(delBtn) delBtn.addEventListener('click', ()=>removeShuffleRow(idx));
+  document.getElementById('linkPanel').style.display='block';
+  generateLink();
+}
+
+function removeShuffleRow(idx){
+  document.getElementById(`shuffleRow${idx}`)?.remove();
+  shuffleCount--;
+  // re-number
+  const rows = document.querySelectorAll('.shuffle-row');
+  rows.forEach((r,i)=>{
+    const num = i+1;
+    r.id = `shuffleRow${num}`;
+    r.querySelector('.shuffle-label').textContent = `${num}번 셔플`;
+    r.querySelector('.shuffle-input').id = `shuffleInput${num}`;
+    const del = r.querySelector('.shuffle-del');
+    if(del) del.dataset.idx = num;
+    if(num === 1 && del) del.remove();
   });
+  shuffleCount = rows.length;
+  generateLink();
+}
+
+function getShuffleValues(){
+  const vals = [];
+  for(let i=1;i<=shuffleCount;i++){
+    const inp = document.getElementById(`shuffleInput${i}`);
+    if(inp){
+      const v = Math.min(15, Math.max(1, parseInt(inp.value)||1));
+      vals.push(v);
+    }
+  }
+  return vals;
 }
 
 function checkAdminReady(){
-  const ok=adminState.deck&&adminState.spread;
-  document.getElementById('btnGenLink').disabled=!ok;
-  if(ok){
-    document.getElementById('linkPanel').style.display='block';
-    generateLink();
-  }
+  document.getElementById('btnGenLink').disabled = !adminState.deck;
 }
 
 function generateLink(){
-  if(!adminState.deck||!adminState.spread) return;
-  const name=(document.getElementById('clientNameInput')||{}).value||'';
-  const kakao=(document.getElementById('kakaoInput')||{}).value||'';
-  const base=location.origin+location.pathname;
+  if(!adminState.deck) return;
+  const name = document.getElementById('clientNameInput').value.trim();
+  const shuffles = getShuffleValues();
+  if(!shuffles.length) return;
 
-  if(!name.trim()){
-    document.getElementById('linkWaiting').style.display='';
-    document.getElementById('linkBox').style.display='none';
-    document.getElementById('linkHint').style.display='none';
-    return;
-  }
+  const base = location.origin + location.pathname;
+  let url = `${base}?deck=${adminState.deck}&shuffles=${shuffles.join(',')}&name=${encodeURIComponent(name||'내담자')}`;
 
-  let url=`${base}?deck=${adminState.deck}&spread=${adminState.spread}&name=${encodeURIComponent(name.trim())}`;
-  if(kakao.trim()) url+=`&kakao=${encodeURIComponent(kakao.trim())}`;
-  document.getElementById('generatedLink').textContent=url;
-  document.getElementById('linkWaiting').style.display='none';
-  document.getElementById('linkBox').style.display='flex';
-  document.getElementById('linkHint').style.display='block';
+  document.getElementById('generatedLink').textContent = url;
+  document.getElementById('linkWaiting').style.display = name ? 'none' : '';
+  document.getElementById('linkBox').style.display = name ? 'flex' : 'none';
+  document.getElementById('linkHint').style.display = name ? 'block' : 'none';
 }
 
 function copyLink(){
-  const url=document.getElementById('generatedLink').textContent;
+  const url = document.getElementById('generatedLink').textContent;
   navigator.clipboard.writeText(url).then(()=>{
-    const btn=document.getElementById('copyBtn');
-    btn.textContent='복사됨 ✓';btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='복사';btn.classList.remove('copied');},2000);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent='복사됨 ✓'; btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent='복사'; btn.classList.remove('copied'); }, 2000);
   });
 }
 
@@ -709,17 +456,19 @@ function showAdminResults(){
 }
 
 async function loadResults(){
-  const el=document.getElementById('resultsList');
-  el.innerHTML='<div class="no-result">불러오는 중... ✦</div>';
+  const el = document.getElementById('resultsList');
+  el.innerHTML = '<div class="no-result">불러오는 중... ✦</div>';
   try {
-    const q=query(collection(db,'readings'),orderBy('id','desc'));
-    const snap=await getDocs(q);
-    if(snap.empty){
-      el.innerHTML='<div class="no-result">아직 상담 신청 내역이 없습니다 ✦</div>';
-      return;
-    }
-    el.innerHTML=snap.docs.map((d,i)=>{
-      const r=d.data();
+    const q = query(collection(db,'readings'), orderBy('id','desc'));
+    const snap = await getDocs(q);
+    if(snap.empty){ el.innerHTML='<div class="no-result">아직 상담 신청 내역이 없습니다 ✦</div>'; return; }
+    el.innerHTML = snap.docs.map((d,i)=>{
+      const r = d.data();
+      const shuffleBlocks = (r.shuffles||[]).map((sh,si)=>`
+        <div class="shuffle-section">
+          <div class="shuffle-section-title">${si+1}번 셔플 (${sh.count}장)</div>
+          <div class="cards-chips">${sh.cards.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+        </div>`).join('');
       return `
         <div class="result-item">
           <div class="result-item-head">
@@ -727,57 +476,99 @@ async function loadResults(){
             ${i===0?'<span class="badge-new">NEW</span>':''}
           </div>
           <div class="result-row">📅 <span>${r.datetime}</span></div>
-          <div class="result-row">🃏 <span>${r.deckName} · ${r.spreadLabel}</span></div>
-          <div class="cards-chips">${r.cards.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
+          <div class="result-row">🃏 <span>${r.deckName}</span></div>
+          ${shuffleBlocks}
         </div>`;
     }).join('');
-  } catch(e) {
-    el.innerHTML='<div class="no-result">불러오기 실패: '+e.message+'</div>';
+  } catch(e){
+    el.innerHTML = '<div class="no-result">불러오기 실패: '+e.message+'</div>';
   }
 }
 
 async function clearAll(){
   if(confirm('모든 신청 내역을 삭제하시겠습니까?')){
-    const snap=await getDocs(collection(db,'readings'));
-    const dels=snap.docs.map(d=>deleteDoc(doc(db,'readings',d.id)));
-    await Promise.all(dels);
+    const snap = await getDocs(collection(db,'readings'));
+    await Promise.all(snap.docs.map(d=>deleteDoc(doc(db,'readings',d.id))));
     loadResults();
   }
 }
 
-/* ═══════════════════════════════════════════════════════
-   CLIENT LOGIC
-═══════════════════════════════════════════════════════ */
-let picked=[];   // [{n,s,l,order}]
-let shuffled=[];
+/* ══════════════════════════════════════
+   CLIENT
+══════════════════════════════════════ */
+let currentShuffle = 0;   // 0-based index
+let allResults     = [];  // [{count, cards:[]}]
+let picked         = [];
 
 function initClient(){
-  const deck=DECKS[CLIENT_DECK];
-  if(!deck){
-    document.getElementById('clientPick').innerHTML='<p style="color:var(--muted);text-align:center;">잘못된 링크입니다.</p>';
-    return;
-  }
-  document.getElementById('clientDeckName').textContent=`${deck.icon} ${deck.name}`;
-  const nameLabel = CLIENT_NAME ? `${CLIENT_NAME}님 · 카드 ${CLIENT_SPREAD}장 선택` : `카드 ${CLIENT_SPREAD}장 선택`;
-  document.getElementById('clientSpreadName').textContent=nameLabel;
-  updatePickStatus();
-  buildCards(deck);
+  const deck = DECKS[CLIENT_DECK];
+  if(!deck){ document.getElementById('clientPick').innerHTML='<p style="color:var(--muted);text-align:center;">잘못된 링크입니다.</p>'; return; }
+  document.getElementById('clientDeckName').textContent = `${deck.icon} ${deck.name}`;
+  buildProgressDots();
+  loadShuffle(0);
+
+  document.getElementById('btnNext').addEventListener('click', async ()=>{
+    // save current shuffle result
+    allResults.push({ count: CLIENT_SHUFFLES[currentShuffle], cards: picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`) });
+
+    if(currentShuffle < CLIENT_SHUFFLES.length - 1){
+      // next shuffle
+      currentShuffle++;
+      picked = [];
+      document.getElementById('btnNext').disabled = true;
+      loadShuffle(currentShuffle);
+    } else {
+      // all done → save & show done screen
+      const rec = {
+        id: Date.now(),
+        datetime: new Date().toLocaleString('ko-KR'),
+        clientName: CLIENT_NAME || '(이름 없음)',
+        deckName: deck.name,
+        shuffles: allResults,
+      };
+      try { await addDoc(collection(db,'readings'), rec); }
+      catch(e){ console.error('저장 실패:', e); }
+      showDone();
+    }
+  });
 }
 
-function buildCards(deck){
-  shuffled=[...deck.cards].sort(()=>Math.random()-.5);
-  const sea=document.getElementById('cardsSea');
-  sea.innerHTML='';
+function buildProgressDots(){
+  const el = document.getElementById('shuffleProgress');
+  el.innerHTML = CLIENT_SHUFFLES.map((_,i)=>`<div class="progress-dot ${i===0?'active':''}" id="dot${i}"></div>`).join('');
+}
+
+function updateProgressDots(){
+  CLIENT_SHUFFLES.forEach((_,i)=>{
+    const dot = document.getElementById(`dot${i}`);
+    if(!dot) return;
+    dot.className = 'progress-dot';
+    if(i < currentShuffle) dot.classList.add('done');
+    else if(i === currentShuffle) dot.classList.add('active');
+  });
+}
+
+function loadShuffle(idx){
+  const count = CLIENT_SHUFFLES[idx];
+  const isLast = idx === CLIENT_SHUFFLES.length - 1;
+  document.getElementById('clientSpreadName').textContent =
+    `${idx+1}번째 셔플 · ${count}장 선택 (총 ${CLIENT_SHUFFLES.length}번 셔플)`;
+  document.getElementById('pickStatus').textContent = `0 / ${count} 장 선택됨`;
+  document.getElementById('btnNext').textContent = isLast ? '선택 완료 ✦' : `다음 셔플로 →`;
+  updateProgressDots();
+  buildCards(DECKS[CLIENT_DECK], count);
+}
+
+function buildCards(deck, count){
+  const shuffled = [...deck.cards].sort(()=>Math.random()-.5);
+  const sea = document.getElementById('cardsSea');
+  sea.innerHTML = '';
   shuffled.forEach((card,idx)=>{
-    const el=document.createElement('div');
-    el.className='tc';
-    el.dataset.idx=idx;
-    el.innerHTML=`
+    const el = document.createElement('div');
+    el.className = 'tc';
+    el.innerHTML = `
       <div class="tc-inner">
-        <div class="tc-face tc-back">
-          <div class="tc-back-inner"></div>
-          <span class="tc-back-star">✦</span>
-        </div>
+        <div class="tc-face tc-back"><div class="tc-back-inner"></div><span class="tc-back-star">✦</span></div>
         <div class="tc-face tc-front">
           <span class="tc-order" id="order-${idx}"></span>
           <span class="tc-sym">${card.s}</span>
@@ -785,53 +576,59 @@ function buildCards(deck){
           <span class="tc-label">${card.l}</span>
         </div>
       </div>`;
-    el.addEventListener('click',()=>pickCard(el,card,idx));
+    el.addEventListener('click', ()=>{
+      if(el.classList.contains('flipped')||el.classList.contains('disabled')) return;
+      if(picked.length >= count) return;
+      const order = picked.length + 1;
+      picked.push({...card, order});
+      el.classList.add('flipped');
+      document.getElementById(`order-${idx}`).textContent = order+'번째';
+      document.getElementById('pickStatus').textContent = `${picked.length} / ${count} 장 선택됨`;
+      if(picked.length >= count){
+        document.querySelectorAll('.tc:not(.flipped)').forEach(c=>c.classList.add('disabled'));
+        document.getElementById('btnNext').disabled = false;
+      }
+    });
     sea.appendChild(el);
   });
 }
 
-function pickCard(el,card,idx){
-  if(el.classList.contains('flipped')||el.classList.contains('disabled')) return;
-  if(picked.length>=CLIENT_SPREAD) return;
-  const order=picked.length+1;
-  picked.push({...card,order});
-  el.classList.add('flipped');
-  document.getElementById(`order-${idx}`).textContent=order+'번째';
-  updatePickStatus();
-  if(picked.length>=CLIENT_SPREAD){
-    document.querySelectorAll('.tc:not(.flipped)').forEach(c=>c.classList.add('disabled'));
-    document.getElementById('btnToForm').disabled=false;
-  }
+function showDone(){
+  const doneTitle = document.getElementById('doneName');
+  doneTitle.textContent = CLIENT_NAME ? `${CLIENT_NAME}님, 선택 완료!` : '카드 선택 완료';
+
+  const doneShuffles = document.getElementById('doneShuffles');
+  doneShuffles.innerHTML = allResults.map((sh,i)=>`
+    <div class="done-shuffle-block">
+      <div class="done-shuffle-title">${i+1}번 셔플 · ${sh.count}장</div>
+      <div class="done-chips">${sh.cards.map(c=>`<span class="done-chip">${c}</span>`).join('')}</div>
+    </div>`).join('');
+
+  document.getElementById('clientPick').style.display='none';
+  document.getElementById('clientDone').style.display='flex';
+  document.getElementById('clientDone').style.flexDirection='column';
+  document.getElementById('clientDone').style.alignItems='center';
+  window.scrollTo(0,0);
 }
 
-function updatePickStatus(){
-  document.getElementById('pickStatus').textContent=`${picked.length} / ${CLIENT_SPREAD} 장 선택됨`;
-}
-
-
-
-/* ═══════════════════════════════════════════════════════
-   ADMIN AUTH (from client page)
-═══════════════════════════════════════════════════════ */
+/* ── ADMIN AUTH ── */
 function openAdminAuth(){
   document.getElementById('pwInput').value='';
   document.getElementById('pwErr').style.display='none';
   document.getElementById('pwOverlay').classList.add('open');
   setTimeout(()=>document.getElementById('pwInput').focus(),100);
 }
-function closePw(){document.getElementById('pwOverlay').classList.remove('open');}
+function closePw(){ document.getElementById('pwOverlay').classList.remove('open'); }
 function checkPw(){
   if(document.getElementById('pwInput').value===ADMIN_PW){
     closePw();
-    // redirect to admin
-    window.location.href=location.origin+location.pathname+'#results';
-    location.reload(); // will land on admin page without params, then auto-show results
+    window.location.href = location.origin+location.pathname+'#results';
+    location.reload();
   } else {
     document.getElementById('pwErr').style.display='block';
   }
 }
 
-// if hash=results on admin page, go straight to results
 if(!IS_CLIENT && location.hash==='#results'){
   window.addEventListener('DOMContentLoaded',()=>{
     setTimeout(showAdminResults,200);
@@ -839,10 +636,9 @@ if(!IS_CLIENT && location.hash==='#results'){
   });
 }
 
-// Admin page: show results button
 window.addEventListener('DOMContentLoaded',()=>{
   if(!IS_CLIENT){
-    const rb=document.createElement('button');
+    const rb = document.createElement('button');
     rb.className='btn-outline';
     rb.textContent='📋 신청 결과 보기';
     rb.style.cssText='position:fixed;bottom:20px;right:20px;z-index:200;';
@@ -851,5 +647,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
 });
 </script>
+
 </body>
 </html>
