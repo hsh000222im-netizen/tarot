@@ -594,6 +594,29 @@ window.addEventListener('DOMContentLoaded', ()=>{
     document.getElementById('clientPage').style.display='flex';
     document.getElementById('adminFab').style.display='flex';
     document.getElementById('adminFab').addEventListener('click', openAdminAuth);
+    document.getElementById('btnToForm').addEventListener('click', async ()=>{
+      const deck=DECKS[CLIENT_DECK];
+      const rec={
+        id:Date.now(),
+        datetime:new Date().toLocaleString('ko-KR'),
+        clientName: CLIENT_NAME || '(이름 없음)',
+        deckName:deck.name,
+        spreadLabel:`${CLIENT_SPREAD}장`,
+        cards:picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`),
+      };
+      try {
+        await addDoc(collection(db,'readings'), rec);
+      } catch(e) {
+        console.error('저장 실패:', e);
+      }
+      document.getElementById('doneChips').innerHTML=
+        picked.map(c=>`<span class="done-chip">${c.order}번째 ${c.s} ${c.l}</span>`).join('');
+      const doneTitle=document.getElementById('doneName');
+      if(doneTitle) doneTitle.textContent=CLIENT_NAME?`${CLIENT_NAME}님, 선택 완료!`:'카드 선택 완료';
+      document.getElementById('clientPick').style.display='none';
+      document.getElementById('clientDone').style.display='';
+      window.scrollTo(0,0);
+    });
     initClient();
   } else {
     document.getElementById('adminPage').style.display='flex';
@@ -783,40 +806,7 @@ function updatePickStatus(){
   document.getElementById('pickStatus').textContent=`${picked.length} / ${CLIENT_SPREAD} 장 선택됨`;
 }
 
-document.getElementById('btnToForm').addEventListener('click', async ()=>{
-  const deck=DECKS[CLIENT_DECK];
-  const rec={
-    id:Date.now(),
-    datetime:new Date().toLocaleString('ko-KR'),
-    clientName: CLIENT_NAME || '(이름 없음)',
-    deckName:deck.name,
-    spreadLabel:`${CLIENT_SPREAD}장`,
-    cards:picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`),
-  };
-  try {
-    await addDoc(collection(db,'readings'), rec);
-  } catch(e) {
-    console.error('저장 실패:', e);
-  }
 
-  document.getElementById('doneChips').innerHTML=
-    picked.map(c=>`<span class="done-chip">${c.order}번째 ${c.s} ${c.l}</span>`).join('');
-
-  const doneTitle=document.getElementById('doneName');
-  if(doneTitle) doneTitle.textContent=CLIENT_NAME?`${CLIENT_NAME}님, 선택 완료!`:'카드 선택 완료';
-
-  const kakaoUrl=params.get('kakao');
-  if(kakaoUrl){
-    document.getElementById('kakaoLink').href=kakaoUrl;
-    document.getElementById('kakaoLink').style.display='inline-block';
-  } else {
-    document.getElementById('kakaoLink').style.display='none';
-  }
-
-  document.getElementById('clientPick').style.display='none';
-  document.getElementById('clientDone').style.display='';
-  window.scrollTo(0,0);
-});
 
 /* ═══════════════════════════════════════════════════════
    ADMIN AUTH (from client page)
