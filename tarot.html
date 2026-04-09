@@ -614,7 +614,9 @@ window.addEventListener('DOMContentLoaded', ()=>{
       const doneTitle=document.getElementById('doneName');
       if(doneTitle) doneTitle.textContent=CLIENT_NAME?`${CLIENT_NAME}님, 선택 완료!`:'카드 선택 완료';
       document.getElementById('clientPick').style.display='none';
-      document.getElementById('clientDone').style.display='';
+      document.getElementById('clientDone').style.display='flex';
+      document.getElementById('clientDone').style.flexDirection='column';
+      document.getElementById('clientDone').style.alignItems='center';
       window.scrollTo(0,0);
     });
     initClient();
