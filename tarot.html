@@ -85,11 +85,43 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .pick-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:24px;padding:7px 22px;font-size:.82rem;color:var(--gold2);margin-bottom:20px;}
 .pick-pip{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;}
 
-.cards-sea{width:100%;max-width:860px;display:flex;flex-wrap:wrap;gap:9px;justify-content:center;padding:10px;}
+/* ── 카드 펼치기 레이아웃 ── */
+.cards-sea{
+  width:100%;max-width:860px;
+  padding:10px 16px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+.card-row{
+  position:relative;
+  height:110px;
+  width:100%;
+  margin-bottom:8px;
+}
+@media(min-width:500px){ .card-row{height:130px;} }
+@media(min-width:700px){ .card-row{height:150px;} }
 
 /* tarot card */
-.tc{width:var(--card-w);height:var(--card-h);perspective:700px;cursor:pointer;flex-shrink:0;transition:transform .15s;}
-.tc:not(.flipped):not(.disabled):hover{transform:translateY(-6px) scale(1.04);}
+.tc{
+  position:absolute;
+  width:64px; height:106px;
+  perspective:700px;
+  cursor:pointer;
+  transition:transform .15s, z-index 0s;
+}
+@media(min-width:500px){ .tc{width:74px;height:122px;} }
+@media(min-width:700px){ .tc{width:84px;height:140px;} }
+
+.tc:not(.flipped):not(.disabled):hover{
+  transform:translateY(-14px) scale(1.06) !important;
+  z-index:200 !important;
+}
+.tc.flipped{
+  transform:translateY(-18px) scale(1.08) !important;
+  z-index:300 !important;
+}
+
 .tc-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.4,0,.2,1);border-radius:9px;}
 .tc.flipped .tc-inner{transform:rotateY(180deg);}
 .tc-face{position:absolute;inset:0;border-radius:9px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;}
@@ -97,7 +129,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .tc-back-inner{position:absolute;inset:5px;border-radius:6px;border:1px solid rgba(201,168,76,.12);background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(201,168,76,.03) 5px,rgba(201,168,76,.03) 6px),repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(106,63,160,.05) 5px,rgba(106,63,160,.05) 6px);}
 .tc-back-star{position:relative;z-index:1;font-size:1.3rem;color:rgba(201,168,76,.45);}
 .tc:not(.flipped):not(.disabled):hover .tc-back{border-color:var(--gold2);box-shadow:0 0 18px var(--glow2),0 2px 12px rgba(0,0,0,.6);}
-.tc.disabled:not(.flipped) .tc-back{opacity:.4;cursor:default;}
+.tc.disabled:not(.flipped) .tc-back{opacity:.35;cursor:default;}
 .tc-front{transform:rotateY(180deg);background:linear-gradient(160deg,#231640,#1a0d35);border:1px solid var(--gold);box-shadow:0 0 22px var(--glow),0 2px 10px rgba(0,0,0,.5);gap:3px;}
 .tc-order{position:absolute;top:5px;left:0;right:0;text-align:center;font-size:.5rem;color:var(--gold);font-family:'Cinzel Decorative',serif;}
 .tc-sym{font-size:1.9rem;} .tc-num{font-size:.5rem;color:var(--gold2);font-family:'Cinzel Decorative',serif;}
@@ -558,34 +590,54 @@ function buildCards(deck, count){
   const shuffled = [...deck.cards].sort(()=>Math.random()-.5);
   const sea = document.getElementById('cardsSea');
   sea.innerHTML = '';
-  shuffled.forEach((card,idx)=>{
-    const el = document.createElement('div');
-    el.className = 'tc';
-    el.innerHTML = `
-      <div class="tc-inner">
-        <div class="tc-face tc-back"><div class="tc-back-inner"></div><span class="tc-back-star">✦</span></div>
-        <div class="tc-face tc-front">
-          <span class="tc-order" id="order-${idx}"></span>
-          <span class="tc-sym">${card.s}</span>
-          <span class="tc-num">${card.n}</span>
-          <span class="tc-label">${card.l}</span>
-        </div>
-      </div>`;
-    el.addEventListener('click', ()=>{
-      if(el.classList.contains('flipped')||el.classList.contains('disabled')) return;
-      if(picked.length >= count) return;
-      const order = picked.length + 1;
-      picked.push({...card, order});
-      el.classList.add('flipped');
-      document.getElementById(`order-${idx}`).textContent = order+'번째';
-      document.getElementById('pickStatus').textContent = `${picked.length} / ${count} 장 선택됨`;
-      if(picked.length >= count){
-        document.querySelectorAll('.tc:not(.flipped)').forEach(c=>c.classList.add('disabled'));
-        document.getElementById('btnNext').disabled = false;
-      }
+
+  const total = shuffled.length;
+  const ROWS = 3;
+  const perRow = Math.ceil(total / ROWS);
+
+  for(let r=0; r<ROWS; r++){
+    const rowEl = document.createElement('div');
+    rowEl.className = 'card-row';
+    sea.appendChild(rowEl);
+
+    const rowCards = shuffled.slice(r*perRow, (r+1)*perRow);
+    const rowWidth = rowEl.getBoundingClientRect().width || window.innerWidth - 32;
+    const cardW = window.innerWidth >= 700 ? 84 : window.innerWidth >= 500 ? 74 : 64;
+    const overlap = Math.max(12, Math.min(28, (rowWidth - cardW) / Math.max(rowCards.length-1, 1)));
+
+    rowCards.forEach((card, ci)=>{
+      const globalIdx = r*perRow + ci;
+      const el = document.createElement('div');
+      el.className = 'tc';
+      el.style.left = `${ci * overlap}px`;
+      el.style.zIndex = ci;
+      el.style.top = '0';
+      el.innerHTML = `
+        <div class="tc-inner">
+          <div class="tc-face tc-back"><div class="tc-back-inner"></div><span class="tc-back-star">✦</span></div>
+          <div class="tc-face tc-front">
+            <span class="tc-order" id="order-${globalIdx}"></span>
+            <span class="tc-sym">${card.s}</span>
+            <span class="tc-num">${card.n}</span>
+            <span class="tc-label">${card.l}</span>
+          </div>
+        </div>`;
+      el.addEventListener('click', ()=>{
+        if(el.classList.contains('flipped')||el.classList.contains('disabled')) return;
+        if(picked.length >= count) return;
+        const order = picked.length + 1;
+        picked.push({...card, order});
+        el.classList.add('flipped');
+        document.getElementById(`order-${globalIdx}`).textContent = order+'번째';
+        document.getElementById('pickStatus').textContent = `${picked.length} / ${count} 장 선택됨`;
+        if(picked.length >= count){
+          document.querySelectorAll('.tc:not(.flipped)').forEach(c=>c.classList.add('disabled'));
+          document.getElementById('btnNext').disabled = false;
+        }
+      });
+      rowEl.appendChild(el);
     });
-    sea.appendChild(el);
-  });
+  }
 }
 
 function showDone(){
