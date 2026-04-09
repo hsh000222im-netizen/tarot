@@ -95,12 +95,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 }
 .card-row{
   position:relative;
-  height:130px;
+  height:100px;
   width:100%;
-  margin-bottom:16px;
+  margin-bottom:10px;
 }
-@media(min-width:500px){ .card-row{height:150px;} }
-@media(min-width:700px){ .card-row{height:170px;} }
+@media(min-width:500px){ .card-row{height:116px;} }
+@media(min-width:700px){ .card-row{height:132px;} }
 
 /* tarot card */
 .tc{
@@ -627,30 +627,28 @@ function buildCards(deck, count){
   sea.innerHTML = '';
 
   const total = shuffled.length;
-  const ROWS = 3;
+  const ROWS = 5;
   const perRow = Math.ceil(total / ROWS);
+  const cardW = window.innerWidth >= 700 ? 84 : window.innerWidth >= 500 ? 74 : 60;
+  const seaWidth = sea.getBoundingClientRect().width || (window.innerWidth - 40);
 
   for(let r=0; r<ROWS; r++){
     const rowEl = document.createElement('div');
     rowEl.className = 'card-row';
     sea.appendChild(rowEl);
 
-    const rowCards = shuffled.slice(r*perRow, (r+1)*perRow);
-    const cardW = window.innerWidth >= 700 ? 84 : window.innerWidth >= 500 ? 74 : 64;
-    const rowWidth = sea.offsetWidth || window.innerWidth - 32;
-    // 간격을 넓혀서 전체 카드가 rowWidth에 맞게
-    const totalSpan = rowWidth - cardW;
-    const overlap = totalSpan / Math.max(rowCards.length - 1, 1);
+    const rowCards = shuffled.slice(r*perRow, Math.min((r+1)*perRow, total));
+    if(!rowCards.length) continue;
 
-    // 전체 너비 계산 후 중앙 정렬
-    const totalW = cardW + overlap * (rowCards.length - 1);
-    const startX = Math.max(0, (rowWidth - totalW) / 2);
+    const gap = rowCards.length > 1
+      ? (seaWidth - cardW) / (rowCards.length - 1)
+      : 0;
 
     rowCards.forEach((card, ci)=>{
       const globalIdx = r*perRow + ci;
       const el = document.createElement('div');
       el.className = 'tc';
-      el.style.left = `${startX + ci * overlap}px`;
+      el.style.left = `${ci * gap}px`;
       el.style.zIndex = ci;
       el.style.top = '0';
       el.innerHTML = `
