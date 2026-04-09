@@ -98,6 +98,7 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
   height:100px;
   width:100%;
   margin-bottom:10px;
+  overflow:visible;
 }
 @media(min-width:500px){ .card-row{height:116px;} }
 @media(min-width:700px){ .card-row{height:132px;} }
@@ -640,9 +641,9 @@ function buildCards(deck, count){
     const rowCards = shuffled.slice(r*perRow, Math.min((r+1)*perRow, total));
     if(!rowCards.length) continue;
 
-    const gap = rowCards.length > 1
-      ? (seaWidth - cardW) / (rowCards.length - 1)
-      : 0;
+    // 카드의 2/3은 보이고 1/3만 겹치도록
+    const overlap = cardW * (1/3);
+    const gap = cardW - overlap;
 
     rowCards.forEach((card, ci)=>{
       const globalIdx = r*perRow + ci;
