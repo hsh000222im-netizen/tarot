@@ -95,12 +95,12 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 }
 .card-row{
   position:relative;
-  height:110px;
+  height:130px;
   width:100%;
-  margin-bottom:8px;
+  margin-bottom:16px;
 }
-@media(min-width:500px){ .card-row{height:130px;} }
-@media(min-width:700px){ .card-row{height:150px;} }
+@media(min-width:500px){ .card-row{height:150px;} }
+@media(min-width:700px){ .card-row{height:170px;} }
 
 /* tarot card */
 .tc{
@@ -257,6 +257,15 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <div class="board-deck" id="clientDeckName">—</div>
       <div class="board-spread" id="clientSpreadName">—</div>
     </div>
+    <div id="clientQuestion" style="
+      width:100%;max-width:640px;
+      background:rgba(201,168,76,.07);
+      border:1px solid rgba(201,168,76,.25);
+      border-radius:12px;padding:14px 20px;
+      font-size:.88rem;color:var(--gold2);
+      text-align:center;line-height:1.7;
+      margin-bottom:16px;display:none;
+    "></div>
     <div class="shuffle-progress fade-up d1" id="shuffleProgress"></div>
     <div class="pick-pill fade-up d2">
       <span class="pick-pip"></span>
@@ -343,10 +352,10 @@ const DECKS = {
 
 /* ── ROUTING ── */
 const params       = new URLSearchParams(location.search);
-const CLIENT_DECK  = params.get('deck');
-const CLIENT_NAME  = params.get('name')||'';
-// shuffles encoded as "5,3,1" in URL param
-const CLIENT_SHUFFLES = (params.get('shuffles')||'').split(',').map(Number).filter(n=>n>0);
+const CLIENT_DECK      = params.get('deck');
+const CLIENT_NAME      = params.get('name')||'';
+const CLIENT_SHUFFLES  = (params.get('shuffles')||'').split(',').map(Number).filter(n=>n>0);
+const CLIENT_QUESTIONS = (params.get('questions')||'').split('|').map(q=>decodeURIComponent(q));
 const IS_CLIENT    = !!(CLIENT_DECK && CLIENT_SHUFFLES.length);
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -400,13 +409,21 @@ function addShuffleRow(){
   row.className = 'shuffle-row';
   row.id = `shuffleRow${idx}`;
   row.innerHTML = `
-    <span class="shuffle-label">${idx}번 셔플</span>
-    <input class="shuffle-input" type="number" id="shuffleInput${idx}" min="1" max="15" value="3" placeholder="장 수">
-    <span class="shuffle-desc">장 뽑기</span>
-    ${idx > 1 ? `<button class="shuffle-del" data-idx="${idx}">삭제</button>` : ''}
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="shuffle-label">${idx}번 셔플</span>
+        <input class="shuffle-input" type="number" id="shuffleInput${idx}" min="1" max="15" value="3" placeholder="장 수">
+        <span class="shuffle-desc">장 뽑기</span>
+        ${idx > 1 ? `<button class="shuffle-del" data-idx="${idx}">삭제</button>` : ''}
+      </div>
+      <input type="text" id="shuffleQuestion${idx}"
+        style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.8rem;outline:none;"
+        placeholder="질문 입력 (예: 현재 상황을 나타내는 카드)">
+    </div>
   `;
   document.getElementById('shuffleRows').appendChild(row);
-  row.querySelector('.shuffle-input').addEventListener('input', generateLink);
+  row.querySelector(`#shuffleInput${idx}`).addEventListener('input', generateLink);
+  row.querySelector(`#shuffleQuestion${idx}`).addEventListener('input', generateLink);
   const delBtn = row.querySelector('.shuffle-del');
   if(delBtn) delBtn.addEventListener('click', ()=>removeShuffleRow(idx));
   document.getElementById('linkPanel').style.display='block';
@@ -416,13 +433,15 @@ function addShuffleRow(){
 function removeShuffleRow(idx){
   document.getElementById(`shuffleRow${idx}`)?.remove();
   shuffleCount--;
-  // re-number
   const rows = document.querySelectorAll('.shuffle-row');
   rows.forEach((r,i)=>{
     const num = i+1;
     r.id = `shuffleRow${num}`;
     r.querySelector('.shuffle-label').textContent = `${num}번 셔플`;
-    r.querySelector('.shuffle-input').id = `shuffleInput${num}`;
+    const inp = r.querySelector('.shuffle-input');
+    if(inp) inp.id = `shuffleInput${num}`;
+    const qInp = r.querySelector('input[type=text]');
+    if(qInp) qInp.id = `shuffleQuestion${num}`;
     const del = r.querySelector('.shuffle-del');
     if(del) del.dataset.idx = num;
     if(num === 1 && del) del.remove();
@@ -435,16 +454,14 @@ function getShuffleValues(){
   const vals = [];
   for(let i=1;i<=shuffleCount;i++){
     const inp = document.getElementById(`shuffleInput${i}`);
+    const qInp = document.getElementById(`shuffleQuestion${i}`);
     if(inp){
       const v = Math.min(15, Math.max(1, parseInt(inp.value)||1));
-      vals.push(v);
+      const q = qInp ? qInp.value.trim() : '';
+      vals.push({count: v, question: q});
     }
   }
   return vals;
-}
-
-function checkAdminReady(){
-  document.getElementById('btnGenLink').disabled = !adminState.deck;
 }
 
 function generateLink(){
@@ -454,7 +471,10 @@ function generateLink(){
   if(!shuffles.length) return;
 
   const base = location.origin + location.pathname;
-  let url = `${base}?deck=${adminState.deck}&shuffles=${shuffles.join(',')}&name=${encodeURIComponent(name||'내담자')}`;
+  // encode: counts="5,3" questions="현재상황,미래"
+  const counts = shuffles.map(s=>s.count).join(',');
+  const questions = shuffles.map(s=>encodeURIComponent(s.question||'')).join('|');
+  let url = `${base}?deck=${adminState.deck}&shuffles=${counts}&questions=${questions}&name=${encodeURIComponent(name||'내담자')}`;
 
   document.getElementById('generatedLink').textContent = url;
   document.getElementById('linkWaiting').style.display = name ? 'none' : '';
@@ -493,7 +513,7 @@ async function loadResults(){
       const r = d.data();
       const shuffleBlocks = (r.shuffles||[]).map((sh,si)=>`
         <div class="shuffle-section">
-          <div class="shuffle-section-title">${si+1}번 셔플 (${sh.count}장)</div>
+          <div class="shuffle-section-title">${si+1}번 셔플 (${sh.count}장)${sh.question ? ` · ${sh.question}` : ''}</div>
           <div class="cards-chips">${sh.cards.map(c=>`<span class="chip">${c}</span>`).join('')}</div>
         </div>`).join('');
       return `
@@ -536,7 +556,11 @@ function initClient(){
 
   document.getElementById('btnNext').addEventListener('click', async ()=>{
     // save current shuffle result
-    allResults.push({ count: CLIENT_SHUFFLES[currentShuffle], cards: picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`) });
+    allResults.push({
+      count: CLIENT_SHUFFLES[currentShuffle],
+      question: CLIENT_QUESTIONS[currentShuffle] || '',
+      cards: picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`)
+    });
 
     if(currentShuffle < CLIENT_SHUFFLES.length - 1){
       // next shuffle
@@ -578,8 +602,19 @@ function updateProgressDots(){
 function loadShuffle(idx){
   const count = CLIENT_SHUFFLES[idx];
   const isLast = idx === CLIENT_SHUFFLES.length - 1;
+  const question = CLIENT_QUESTIONS[idx] || '';
+
   document.getElementById('clientSpreadName').textContent =
     `${idx+1}번째 셔플 · ${count}장 선택 (총 ${CLIENT_SHUFFLES.length}번 셔플)`;
+
+  const qEl = document.getElementById('clientQuestion');
+  if(question){
+    qEl.textContent = `✦ ${question}`;
+    qEl.style.display = 'block';
+  } else {
+    qEl.style.display = 'none';
+  }
+
   document.getElementById('pickStatus').textContent = `0 / ${count} 장 선택됨`;
   document.getElementById('btnNext').textContent = isLast ? '선택 완료 ✦' : `다음 셔플로 →`;
   updateProgressDots();
@@ -601,15 +636,21 @@ function buildCards(deck, count){
     sea.appendChild(rowEl);
 
     const rowCards = shuffled.slice(r*perRow, (r+1)*perRow);
-    const rowWidth = rowEl.getBoundingClientRect().width || window.innerWidth - 32;
     const cardW = window.innerWidth >= 700 ? 84 : window.innerWidth >= 500 ? 74 : 64;
-    const overlap = Math.max(12, Math.min(28, (rowWidth - cardW) / Math.max(rowCards.length-1, 1)));
+    const rowWidth = sea.offsetWidth || window.innerWidth - 32;
+    // 간격을 넓혀서 전체 카드가 rowWidth에 맞게
+    const totalSpan = rowWidth - cardW;
+    const overlap = totalSpan / Math.max(rowCards.length - 1, 1);
+
+    // 전체 너비 계산 후 중앙 정렬
+    const totalW = cardW + overlap * (rowCards.length - 1);
+    const startX = Math.max(0, (rowWidth - totalW) / 2);
 
     rowCards.forEach((card, ci)=>{
       const globalIdx = r*perRow + ci;
       const el = document.createElement('div');
       el.className = 'tc';
-      el.style.left = `${ci * overlap}px`;
+      el.style.left = `${startX + ci * overlap}px`;
       el.style.zIndex = ci;
       el.style.top = '0';
       el.innerHTML = `
@@ -647,7 +688,7 @@ function showDone(){
   const doneShuffles = document.getElementById('doneShuffles');
   doneShuffles.innerHTML = allResults.map((sh,i)=>`
     <div class="done-shuffle-block">
-      <div class="done-shuffle-title">${i+1}번 셔플 · ${sh.count}장</div>
+      <div class="done-shuffle-title">${i+1}번 셔플 · ${sh.count}장${sh.question ? `<br><span style="font-size:.7rem;color:var(--muted);font-family:'Noto Serif KR',serif;font-weight:400;">${sh.question}</span>` : ''}</div>
       <div class="done-chips">${sh.cards.map(c=>`<span class="done-chip">${c}</span>`).join('')}</div>
     </div>`).join('');
 
