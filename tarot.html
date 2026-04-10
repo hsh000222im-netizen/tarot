@@ -99,23 +99,22 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
   justify-content:center;
   align-items:flex-start;
   width:100%;
-  margin-bottom:10px;
-  padding: 0 8px;
+  margin-bottom:8px;
 }
 
 /* tarot card */
 .tc{
   position:relative;
-  width:64px; height:106px;
+  width:52px; height:86px;
   flex-shrink:0;
   perspective:700px;
   cursor:pointer;
   transition:transform .15s;
-  margin-right:-22px;
+  margin-right:-34px;
 }
 .tc:last-child{ margin-right:0; }
-@media(min-width:500px){ .tc{width:74px;height:122px;margin-right:-26px;} }
-@media(min-width:700px){ .tc{width:84px;height:140px;margin-right:-28px;} }
+@media(min-width:500px){ .tc{width:60px;height:100px;margin-right:-38px;} }
+@media(min-width:700px){ .tc{width:72px;height:120px;margin-right:-44px;} }
 
 .tc:not(.flipped):not(.disabled):hover{
   transform:translateY(-14px) scale(1.06);
@@ -359,7 +358,7 @@ const params       = new URLSearchParams(location.search);
 const CLIENT_DECK      = params.get('deck');
 const CLIENT_NAME      = params.get('name')||'';
 const CLIENT_SHUFFLES  = (params.get('shuffles')||'').split(',').map(Number).filter(n=>n>0);
-const CLIENT_QUESTIONS = (params.get('questions')||'').split('|').map(q=>decodeURIComponent(q));
+const CLIENT_QUESTIONS = CLIENT_SHUFFLES.map((_,i)=>decodeURIComponent(params.get(`q${i}`)||''));
 const IS_CLIENT    = !!(CLIENT_DECK && CLIENT_SHUFFLES.length);
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -477,8 +476,8 @@ function generateLink(){
   const base = location.origin + location.pathname;
   // encode: counts="5,3" questions="현재상황,미래"
   const counts = shuffles.map(s=>s.count).join(',');
-  const questions = shuffles.map(s=>encodeURIComponent(s.question||'')).join('|');
-  let url = `${base}?deck=${adminState.deck}&shuffles=${counts}&questions=${questions}&name=${encodeURIComponent(name||'내담자')}`;
+  let url = `${base}?deck=${adminState.deck}&shuffles=${counts}&name=${encodeURIComponent(name||'내담자')}`;
+  shuffles.forEach((s,i)=>{ url += `&q${i}=${encodeURIComponent(s.question||'')}`; });
 
   document.getElementById('generatedLink').textContent = url;
   document.getElementById('linkWaiting').style.display = name ? 'none' : '';
@@ -631,7 +630,7 @@ function buildCards(deck, count){
   sea.innerHTML = '';
 
   const total = shuffled.length;
-  const ROWS = 5;
+  const ROWS = 7;
   const perRow = Math.ceil(total / ROWS);
 
   for(let r=0; r<ROWS; r++){
