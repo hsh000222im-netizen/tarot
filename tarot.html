@@ -631,8 +631,8 @@ function buildCards(deck, count){
   const ROWS = 5;
   const perRow = Math.ceil(total / ROWS);
   const cardW = window.innerWidth >= 700 ? 84 : window.innerWidth >= 500 ? 74 : 60;
-  const seaWidth = sea.getBoundingClientRect().width || (window.innerWidth - 40);
 
+  // 먼저 모든 row 엘리먼트와 카드를 생성
   for(let r=0; r<ROWS; r++){
     const rowEl = document.createElement('div');
     rowEl.className = 'card-row';
@@ -641,18 +641,13 @@ function buildCards(deck, count){
     const rowCards = shuffled.slice(r*perRow, Math.min((r+1)*perRow, total));
     if(!rowCards.length) continue;
 
-    // 카드의 2/3은 보이고 1/3만 겹치도록
-    const overlap = cardW * (1/3);
-    const gap = cardW - overlap;
-    // 전체 행 너비 계산 후 중앙 정렬
-    const totalRowW = cardW + gap * (rowCards.length - 1);
-    const startX = Math.max(0, (seaWidth - totalRowW) / 2);
-
     rowCards.forEach((card, ci)=>{
       const globalIdx = r*perRow + ci;
       const el = document.createElement('div');
       el.className = 'tc';
-      el.style.left = `${startX + ci * gap}px`;
+      el.dataset.ci = ci;
+      el.dataset.rowLen = rowCards.length;
+      el.style.left = '0px';
       el.style.zIndex = ci;
       el.style.top = '0';
       el.innerHTML = `
@@ -681,6 +676,23 @@ function buildCards(deck, count){
       rowEl.appendChild(el);
     });
   }
+
+  // 렌더링 후 실제 너비 기반으로 중앙 정렬
+  requestAnimationFrame(()=>{
+    const seaWidth = sea.getBoundingClientRect().width;
+    const overlap = cardW * (1/3);
+    const gap = cardW - overlap;
+
+    document.querySelectorAll('.card-row').forEach(rowEl=>{
+      const cards = rowEl.querySelectorAll('.tc');
+      if(!cards.length) return;
+      const totalRowW = cardW + gap * (cards.length - 1);
+      const startX = Math.max(0, (seaWidth - totalRowW) / 2);
+      cards.forEach((c, ci)=>{
+        c.style.left = `${startX + ci * gap}px`;
+      });
+    });
+  });
 }
 
 function showDone(){
