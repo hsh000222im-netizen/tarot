@@ -85,20 +85,20 @@ body{background:var(–bg);color:var(–text);font-family:‘Noto Serif KR’,se
 
 .client-question-box{
 width:100%;max-width:640px;
-background:rgba(201,168,76,.07);
-border:1px solid rgba(201,168,76,.25);
+background:rgba(201,168,76,.12);
+border:2px solid rgba(201,168,76,.6);
 border-radius:12px;
-padding:14px 20px;
-font-size:.85rem;color:var(–gold2);
-text-align:center;line-height:1.8;
+padding:16px 20px;
+font-size:.9rem;
+color:#f0d080 !important;
+text-align:center;
+line-height:1.8;
 margin-bottom:16px;
 word-break:keep-all;
-word-wrap:break-word;
 overflow-wrap:break-word;
-white-space:normal;
 box-sizing:border-box;
-min-height:0;
 height:auto;
+opacity:1 !important;
 }
 .pick-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:24px;padding:7px 22px;font-size:.82rem;color:var(–gold2);margin-bottom:20px;}
 .pick-pip{width:8px;height:8px;border-radius:50%;background:var(–gold);display:inline-block;}
@@ -374,13 +374,7 @@ const params       = new URLSearchParams(location.search);
 const CLIENT_DECK      = params.get('deck');
 const CLIENT_NAME      = params.get('name')||'';
 const CLIENT_SHUFFLES  = (params.get('shuffles')||'').split(',').map(Number).filter(n=>n>0);
-const CLIENT_QUESTIONS = (()=>{
-  try {
-    const qs = params.get('qs');
-    if(qs) return JSON.parse(decodeURIComponent(escape(atob(qs))));
-  } catch(e){}
-  return CLIENT_SHUFFLES.map((_,i)=>decodeURIComponent(params.get('q'+i)||''));
-})();
+const CLIENT_QUESTIONS = CLIENT_SHUFFLES.map((_,i)=>{ const v=params.get('q'+i); return v ? decodeURIComponent(v) : ''; });
 const IS_CLIENT    = !!(CLIENT_DECK && CLIENT_SHUFFLES.length);
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -498,9 +492,8 @@ function generateLink(){
   const base = location.origin + location.pathname;
   // encode: counts="5,3" questions="현재상황,미래"
   const counts = shuffles.map(s=>s.count).join(',');
-  const questions = shuffles.map(s=>s.question||'');
-  const qEncoded = btoa(unescape(encodeURIComponent(JSON.stringify(questions))));
-  let url = `${base}?deck=${adminState.deck}&shuffles=${counts}&name=${encodeURIComponent(name||'내담자')}&qs=${qEncoded}`;
+  let url = `${base}?deck=${adminState.deck}&shuffles=${counts}&name=${encodeURIComponent(name||'내담자')}`;
+  shuffles.forEach((s,i)=>{ url += '&q'+i+'='+encodeURIComponent(s.question||''); });
 
   document.getElementById('generatedLink').textContent = url;
   document.getElementById('linkWaiting').style.display = name ? 'none' : '';
