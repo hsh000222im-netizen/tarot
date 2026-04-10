@@ -82,6 +82,17 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;mi
 .progress-dot.done{background:var(--gold);}
 .progress-dot.active{background:var(--gold2);box-shadow:0 0 8px var(--glow2);}
 
+.client-question-box{
+  width:100%;max-width:640px;
+  background:rgba(201,168,76,.07);
+  border:1px solid rgba(201,168,76,.25);
+  border-radius:12px;padding:14px 20px;
+  font-size:.85rem;color:var(--gold2);
+  text-align:center;line-height:1.8;
+  margin-bottom:16px;
+  word-break:keep-all;word-wrap:break-word;
+  box-sizing:border-box;
+}
 .pick-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:24px;padding:7px 22px;font-size:.82rem;color:var(--gold2);margin-bottom:20px;}
 .pick-pip{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block;}
 
@@ -260,15 +271,7 @@ input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-
       <div class="board-deck" id="clientDeckName">—</div>
       <div class="board-spread" id="clientSpreadName">—</div>
     </div>
-    <div id="clientQuestion" style="
-      width:100%;max-width:640px;
-      background:rgba(201,168,76,.07);
-      border:1px solid rgba(201,168,76,.25);
-      border-radius:12px;padding:14px 20px;
-      font-size:.88rem;color:var(--gold2);
-      text-align:center;line-height:1.7;
-      margin-bottom:16px;display:none;
-    "></div>
+    <div id="clientQuestion" class="client-question-box" style="display:none;"></div>
     <div class="shuffle-progress fade-up d1" id="shuffleProgress"></div>
     <div class="pick-pill fade-up d2">
       <span class="pick-pip"></span>
@@ -612,7 +615,7 @@ function loadShuffle(idx){
 
   const qEl = document.getElementById('clientQuestion');
   if(question){
-    qEl.textContent = `✦ ${question}`;
+    qEl.textContent = '✦  ' + question;
     qEl.style.display = 'block';
   } else {
     qEl.style.display = 'none';
