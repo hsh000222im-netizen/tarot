@@ -375,13 +375,21 @@ const params       = new URLSearchParams(location.search);
 const CLIENT_DECK      = params.get('deck');
 const CLIENT_NAME      = params.get('name')||'';
 const CLIENT_SHUFFLES  = (params.get('shuffles')||'').split(',').map(Number).filter(n=>n>0);
-const CLIENT_QUESTIONS = (()=>{
+const CLIENT_QS = (()=>{
   try {
     const qs = params.get('qs');
-    if(qs) return JSON.parse(decodeURIComponent(qs));
+    if(qs){
+      const parsed = JSON.parse(decodeURIComponent(qs));
+      // 구형: 문자열 배열 / 신형: {q, r} 객체 배열
+      if(parsed.length && typeof parsed[0] === 'string')
+        return parsed.map(q=>({q, r:0}));
+      return parsed;
+    }
   } catch(e){}
-  return CLIENT_SHUFFLES.map(()=>'');
+  return CLIENT_SHUFFLES.map(()=>({q:'', r:0}));
 })();
+const CLIENT_QUESTIONS = CLIENT_QS.map(x=>x.q||'');
+const CLIENT_REVERSES  = CLIENT_QS.map(x=>x.r===1);
 const IS_CLIENT    = !!(CLIENT_DECK && CLIENT_SHUFFLES.length);
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -445,11 +453,16 @@ function addShuffleRow(){
       <input type="text" id="shuffleQuestion${idx}"
         style="width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(201,168,76,.2);border-radius:7px;padding:8px 12px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.8rem;outline:none;"
         placeholder="질문 입력 (예: 현재 상황을 나타내는 카드)">
+      <label id="shuffleReverseLabel${idx}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.78rem;color:#c4b0f0;">
+        <input type="checkbox" id="shuffleReverse${idx}" style="width:16px;height:16px;accent-color:#c9a84c;cursor:pointer;">
+        역방향 적용 (뽑힌 카드 중 랜덤으로 역방향)
+      </label>
     </div>
   `;
   document.getElementById('shuffleRows').appendChild(row);
   row.querySelector(`#shuffleInput${idx}`).addEventListener('input', generateLink);
   row.querySelector(`#shuffleQuestion${idx}`).addEventListener('input', generateLink);
+  row.querySelector(`#shuffleReverse${idx}`).addEventListener('change', generateLink);
   const delBtn = row.querySelector('.shuffle-del');
   if(delBtn) delBtn.addEventListener('click', ()=>removeShuffleRow(idx));
   document.getElementById('linkPanel').style.display='block';
@@ -468,6 +481,10 @@ function removeShuffleRow(idx){
     if(inp) inp.id = `shuffleInput${num}`;
     const qInp = r.querySelector('input[type=text]');
     if(qInp) qInp.id = `shuffleQuestion${num}`;
+    const revInp = r.querySelector('input[type=checkbox]');
+    if(revInp) revInp.id = `shuffleReverse${num}`;
+    const revLabel = r.querySelector('label[id^=shuffleReverseLabel]');
+    if(revLabel) revLabel.id = `shuffleReverseLabel${num}`;
     const del = r.querySelector('.shuffle-del');
     if(del) del.dataset.idx = num;
     if(num === 1 && del) del.remove();
@@ -484,7 +501,9 @@ function getShuffleValues(){
     if(inp){
       const v = Math.min(15, Math.max(1, parseInt(inp.value)||1));
       const q = qInp ? qInp.value.trim() : '';
-      vals.push({count: v, question: q});
+      const revInp = document.getElementById(`shuffleReverse${i}`);
+      const rev = revInp ? revInp.checked : false;
+      vals.push({count: v, question: q, reverse: rev});
     }
   }
   return vals;
@@ -499,7 +518,7 @@ function generateLink(){
   const base = location.origin + location.pathname;
   // encode: counts="5,3" questions="현재상황,미래"
   const counts = shuffles.map(s=>s.count).join(',');
-  const qArr = shuffles.map(s=>s.question||'');
+  const qArr = shuffles.map(s=>({q: s.question||'', r: s.reverse ? 1 : 0}));
   const qParam = encodeURIComponent(JSON.stringify(qArr));
   let url = `${base}?deck=${adminState.deck}&shuffles=${counts}&name=${encodeURIComponent(name||'내담자')}&qs=${qParam}`;
 
@@ -586,7 +605,7 @@ function initClient(){
     allResults.push({
       count: CLIENT_SHUFFLES[currentShuffle],
       question: CLIENT_QUESTIONS[currentShuffle] || '',
-      cards: picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}`)
+      cards: picked.map(c=>`${c.order}번째 · ${c.s} ${c.l}${c.reversed ? ' (역방향)' : ''}`)
     });
 
     if(currentShuffle < CLIENT_SHUFFLES.length - 1){
@@ -634,9 +653,13 @@ function loadShuffle(idx){
   document.getElementById('clientSpreadName').textContent =
     `${idx+1}번째 셔플 · ${count}장 선택 (총 ${CLIENT_SHUFFLES.length}번 셔플)`;
 
+  const isReverse = CLIENT_REVERSES[idx] || false;
   const qEl = document.getElementById('clientQuestion');
-  if(question){
-    qEl.textContent = '✦  ' + question;
+  let qText = '';
+  if(question) qText += '✦  ' + question;
+  if(isReverse) qText += (question ? '  |  ↕ 역방향 적용' : '✦  ↕ 역방향 적용');
+  if(qText){
+    qEl.textContent = qText;
     qEl.style.display = 'block';
   } else {
     qEl.style.display = 'none';
@@ -645,10 +668,10 @@ function loadShuffle(idx){
   document.getElementById('pickStatus').textContent = `0 / ${count} 장 선택됨`;
   document.getElementById('btnNext').textContent = isLast ? '선택 완료 ✦' : `다음 셔플로 →`;
   updateProgressDots();
-  buildCards(DECKS[CLIENT_DECK], count);
+  buildCards(DECKS[CLIENT_DECK], count, isReverse);
 }
 
-function buildCards(deck, count){
+function buildCards(deck, count, useReverse=false){
   const shuffled = [...deck.cards].sort(()=>Math.random()-.5);
   const sea = document.getElementById('cardsSea');
   sea.innerHTML = '';
@@ -684,9 +707,11 @@ function buildCards(deck, count){
         if(el.classList.contains('flipped')||el.classList.contains('disabled')) return;
         if(picked.length >= count) return;
         const order = picked.length + 1;
-        picked.push({...card, order});
+        const reversed = useReverse && Math.random() < 0.5;
+        picked.push({...card, order, reversed});
         el.classList.add('flipped');
-        document.getElementById(`order-${globalIdx}`).textContent = order+'번째';
+        if(reversed) el.querySelector('.tc-inner').style.transform = 'rotateY(180deg) rotate(180deg)';
+        document.getElementById(`order-${globalIdx}`).textContent = order+'번째' + (reversed ? ' ↕' : '');
         document.getElementById('pickStatus').textContent = `${picked.length} / ${count} 장 선택됨`;
         if(picked.length >= count){
           document.querySelectorAll('.tc:not(.flipped)').forEach(c=>c.classList.add('disabled'));
