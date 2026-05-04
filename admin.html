@@ -227,7 +227,7 @@ function renderDays(){
         <input class="tginput" type="text" id="gs-${key}" placeholder="15:00" maxlength="5">
         <label>종료</label>
         <input class="tginput" type="text" id="ge-${key}" placeholder="24:00" maxlength="5">
-        <button class="tgbtn" onclick="genSlots('${key}')">10분 단위 생성</button>
+        <button class="tgbtn" onclick="genSlots('${key}')">30분 단위 생성</button>
       </div>
       <div class="slot-grid" id="sg-${key}"></div>
     `;
@@ -281,7 +281,7 @@ function genSlots(key){
   const endMin = parseTime(endVal);
   if(startMin===null||endMin===null||startMin>=endMin){ showToast('올바른 시간을 입력해 주세요'); return; }
   const slots = [];
-  for(let cur=startMin; cur<endMin; cur+=10){
+  for(let cur=startMin; cur<endMin; cur+=30){
     const h=Math.floor(cur/60); const m=cur%60;
     slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
   }
