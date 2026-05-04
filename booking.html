@@ -69,9 +69,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ogroup{margin-bottom:22px;}
 .olabel{font-size:.7rem;color:var(–text2);margin-bottom:10px;letter-spacing:.05em;}
 .orow{display:flex;flex-wrap:wrap;gap:7px;}
-.obtn{border:1px solid var(–border);border-radius:8px;padding:8px 15px;cursor:pointer;background:transparent;color:var(–text2);font-family:‘Noto Serif KR’,serif;font-size:.8rem;transition:all .2s;}
-.obtn:hover{border-color:var(–border2);color:var(–text);}
-.obtn.selected{border-color:var(–gold);color:var(–gold2);background:rgba(200,164,86,.07);}
+.obtn{border:1px solid var(–border);border-radius:8px;padding:8px 15px;cursor:pointer;background:transparent;color:#b8ad9a !important;font-family:‘Noto Serif KR’,serif;font-size:.8rem;transition:all .2s;-webkit-appearance:none;appearance:none;}
+.obtn:hover{border-color:var(–border2);color:#e2d8c8 !important;}
+.obtn.selected{border-color:var(–gold);color:#e8c87a !important;background:rgba(200,164,86,.07);}
 
 /* DATE/TIME */
 .date-row{display:flex;gap:8px;margin-bottom:18px;}
@@ -393,7 +393,7 @@ function showTime(type){
       notice.className='notice';
       notice.style.marginBottom='14px';
       notice.textContent='💬 혼합 리딩은 질문지 발송 후 실시간 상담이 진행됩니다. 질문지는 결제 및 양식 제출 후 24시간 이내 발송되며, 실시간 상담은 현재 시간 기준 24시간 이후부터 예약 가능합니다.';
-      document.getElementById('timeArea').before(notice);
+      document.getElementById('optArea').after(notice);
     }
   } else {
     // 실시간: 오늘/내일 버튼
