@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heet Signal · 타로 상담 예약</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08070f;--bg2:#0f0d1c;--bg3:#161328;
+  --gold:#c8a456;--gold2:#e8c87a;--gold3:#f5dfa0;
+  --text:#e2d8c8;--text2:#b8ad9a;--text3:#7a7268;
+  --border:rgba(200,164,86,.18);--border2:rgba(200,164,86,.38);
+  --glow:rgba(200,164,86,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;font-weight:300;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 10%,rgba(100,80,160,.07),transparent 55%),radial-gradient(ellipse at 85% 90%,rgba(80,60,130,.05),transparent 55%);pointer-events:none;z-index:0;}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+#stars span{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) var(--dl,0s) infinite ease-in-out;}
+@keyframes tw{0%,100%{opacity:.07;}50%{opacity:.45;}}
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:48px 20px 80px;}
+
+/* HEADER */
+.site-header{text-align:center;margin-bottom:44px;}
+.site-name{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,6vw,2.8rem);font-weight:300;letter-spacing:.28em;color:var(--gold2);display:block;margin-bottom:8px;}
+.site-sub{font-size:.65rem;letter-spacing:.45em;color:var(--text3);text-transform:uppercase;}
+.hdivider{display:flex;align-items:center;gap:14px;margin:12px auto 16px;max-width:180px;}
+.hdivider::before,.hdivider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
+.hdivider span{color:var(--gold);font-size:.8rem;opacity:.6;}
+
+/* STEPS */
+.steps{display:flex;justify-content:center;align-items:center;gap:0;margin-bottom:36px;}
+.sdot{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--text3);transition:all .3s;background:var(--bg);}
+.sdot.active{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px var(--glow);}
+.sdot.done{border-color:rgba(200,164,86,.5);background:rgba(200,164,86,.1);color:var(--gold2);}
+.sline{width:36px;height:1px;background:var(--border);transition:background .3s;}
+.sline.done{background:rgba(200,164,86,.4);}
+
+/* SECTIONS */
+.section{display:none;}
+.section.active{display:block;animation:fadeUp .35s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.slabel{font-size:.62rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
+.slabel::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
+.stitle{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:400;color:var(--gold2);margin-bottom:6px;letter-spacing:.04em;}
+.sdesc{font-size:.76rem;color:var(--text3);line-height:1.8;margin-bottom:26px;}
+
+/* MENU CARDS */
+.menu-grid{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+.menu-card{border:1px solid var(--border);border-radius:11px;padding:16px 18px;cursor:pointer;transition:all .22s;background:rgba(15,13,28,.6);position:relative;overflow:hidden;}
+.menu-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 0%,var(--glow),transparent 65%);opacity:0;transition:opacity .22s;}
+.menu-card:hover{border-color:var(--border2);}
+.menu-card:hover::after,.menu-card.selected::after{opacity:1;}
+.menu-card.selected{border-color:var(--gold);background:rgba(200,164,86,.05);}
+.menu-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.menu-name{font-size:.9rem;font-weight:500;color:var(--text);}
+.menu-price{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--gold2);}
+.menu-info{font-size:.7rem;color:var(--text3);line-height:1.75;}
+.mbadge{display:inline-block;font-size:.56rem;letter-spacing:.08em;padding:2px 7px;border-radius:3px;margin-left:6px;vertical-align:middle;}
+.b-rt{background:rgba(200,164,86,.1);color:var(--gold);border:1px solid rgba(200,164,86,.22);}
+.b-24{background:rgba(100,150,210,.1);color:#90b8e0;border:1px solid rgba(100,150,210,.2);}
+.b-48{background:rgba(150,100,200,.1);color:#b890e0;border:1px solid rgba(150,100,200,.2);}
+.b-wk{background:rgba(200,100,150,.1);color:#e090b8;border:1px solid rgba(200,100,150,.2);}
+
+/* OPT BTNS */
+.ogroup{margin-bottom:22px;}
+.olabel{font-size:.7rem;color:var(--text2);margin-bottom:10px;letter-spacing:.05em;}
+.orow{display:flex;flex-wrap:wrap;gap:7px;}
+.obtn{border:1px solid var(--border);border-radius:8px;padding:8px 15px;cursor:pointer;background:transparent;color:var(--text2);font-family:'Noto Serif KR',serif;font-size:.8rem;transition:all .2s;}
+.obtn:hover{border-color:var(--border2);color:var(--text);}
+.obtn.selected{border-color:var(--gold);color:var(--gold2);background:rgba(200,164,86,.07);}
+
+/* DATE/TIME */
+.date-row{display:flex;gap:8px;margin-bottom:18px;}
+.date-btn{flex:1;border:1px solid var(--border);border-radius:9px;padding:11px 8px;cursor:pointer;background:transparent;color:var(--text2);font-family:'Noto Serif KR',serif;font-size:.8rem;text-align:center;transition:all .2s;}
+.date-btn:hover{border-color:var(--border2);}
+.date-btn.selected{border-color:var(--gold);color:var(--gold2);background:rgba(200,164,86,.07);}
+.date-day{font-size:.6rem;color:var(--text3);margin-top:3px;}
+.tgrid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:6px;}
+.tslot{border:1px solid var(--border);border-radius:7px;padding:7px 13px;cursor:pointer;background:transparent;color:var(--text2);font-family:'Noto Serif KR',serif;font-size:.78rem;transition:all .2s;}
+.tslot:hover:not(.locked):not(.taken){border-color:var(--border2);color:var(--text);}
+.tslot.selected{border-color:var(--gold);color:var(--gold2);background:rgba(200,164,86,.07);}
+.tslot.locked{opacity:.3;cursor:not-allowed;text-decoration:line-through;}
+.tslot.taken{opacity:.3;cursor:not-allowed;color:#c08080;border-color:rgba(200,80,80,.15);}
+.no-slots{font-size:.76rem;color:var(--text3);padding:14px;text-align:center;border:1px dashed var(--border);border-radius:8px;}
+
+/* PRICE BOX */
+.price-box{border:1px solid var(--border);border-radius:11px;padding:18px;background:rgba(200,164,86,.03);margin-bottom:22px;}
+.prow{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text2);margin-bottom:7px;}
+.prow.disc{color:#98c080;}
+.ptotal{display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);margin-top:4px;}
+.ptotal-label{font-size:.85rem;color:var(--text);}
+.ptotal-amount{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold2);}
+
+/* INPUT */
+.igroup{margin-bottom:18px;}
+.ilabel{font-size:.7rem;color:var(--text2);letter-spacing:.1em;display:block;margin-bottom:7px;}
+.ifield{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:11px 15px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.85rem;outline:none;transition:border-color .2s;}
+.ifield:focus{border-color:var(--gold);}
+.ifield::placeholder{color:var(--text3);}
+
+/* PAYMENT */
+.pay-list{display:flex;flex-direction:column;gap:9px;margin-bottom:22px;}
+.pay-card{border:1px solid var(--border);border-radius:11px;padding:16px 18px;cursor:pointer;transition:all .2s;background:rgba(15,13,28,.6);}
+.pay-card:hover{border-color:var(--border2);}
+.pay-card.selected{border-color:var(--gold);background:rgba(200,164,86,.05);}
+.pay-name{font-size:.88rem;color:var(--text);margin-bottom:3px;}
+.pay-desc{font-size:.7rem;color:var(--text3);}
+.account-box{background:rgba(200,164,86,.05);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:12px;display:none;}
+.account-box.show{display:block;}
+.arow{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px;}
+.akey{color:var(--text3);}
+.aval{color:var(--gold2);font-weight:500;}
+
+/* POLICY */
+.policy{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:9px;padding:14px 17px;margin-bottom:18px;font-size:.72rem;color:var(--text3);line-height:1.95;}
+.policy strong{color:var(--text2);}
+
+/* NOTICE */
+.notice{background:rgba(200,164,86,.05);border-left:2px solid rgba(200,164,86,.5);padding:11px 14px;font-size:.74rem;color:var(--text2);line-height:1.8;border-radius:0 8px 8px 0;margin-bottom:18px;}
+
+/* COMPLETE */
+.complete{text-align:center;padding:28px 0;}
+.c-icon{font-size:2.6rem;display:block;margin-bottom:14px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.c-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold2);margin-bottom:8px;}
+.c-desc{font-size:.76rem;color:var(--text3);line-height:1.9;margin-bottom:24px;}
+.form-tmpl{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:18px;text-align:left;margin-bottom:16px;font-size:.78rem;color:var(--text2);line-height:2.1;white-space:pre-wrap;}
+.ftitle{font-size:.62rem;letter-spacing:.18em;color:var(--gold);margin-bottom:10px;display:block;}
+.kakao-btn{display:block;width:100%;background:#fee500;border:none;border-radius:10px;padding:13px;color:#3c1e1e;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
+.kakao-btn:hover{background:#fdd800;transform:translateY(-1px);}
+.naver-btn{display:block;width:100%;background:#03c75a;border:none;border-radius:10px;padding:13px;color:#fff;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
+.naver-btn:hover{background:#02b350;transform:translateY(-1px);}
+
+/* BTNS */
+.btn{width:100%;background:linear-gradient(135deg,#7a5810,var(--gold),#7a5810);border:none;border-radius:10px;padding:13px;color:#08070f;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .3s;box-shadow:0 4px 18px var(--glow);margin-top:4px;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(200,164,86,.28);}
+.btn:disabled{opacity:.38;cursor:not-allowed;transform:none;}
+.btn-ghost{width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text2);font-family:'Noto Serif KR',serif;font-size:.8rem;cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="wrap">
+
+  <header class="site-header">
+    <span class="site-name">Heet Signal</span>
+    <div class="hdivider"><span>✦</span></div>
+    <span class="site-sub">Tarot Consultation</span>
+  </header>
+
+  <div class="steps">
+    <div class="sdot active" id="sd1">1</div>
+    <div class="sline" id="sl12"></div>
+    <div class="sdot" id="sd2">2</div>
+    <div class="sline" id="sl23"></div>
+    <div class="sdot" id="sd3">3</div>
+    <div class="sline" id="sl34"></div>
+    <div class="sdot" id="sd4">4</div>
+  </div>
+
+  <!-- STEP 1 메뉴 선택 -->
+  <div class="section active" id="s1">
+    <div class="slabel">Step 1</div>
+    <h2 class="stitle">상담 메뉴 선택</h2>
+    <p class="sdesc">원하시는 상담 유형을 선택해 주세요</p>
+    <div class="menu-grid">
+      <div class="menu-card" data-menu="realtime" onclick="selMenu(this)">
+        <div class="menu-top"><span class="menu-name">실시간 리딩 <span class="mbadge b-rt">LIVE</span></span><span class="menu-price">10,000원~</span></div>
+        <div class="menu-info">10분 / 20분 / 30분 선택 · 선택한 날짜와 시간에 실시간으로 진행됩니다</div>
+      </div>
+      <div class="menu-card" data-menu="question" onclick="selMenu(this)">
+        <div class="menu-top"><span class="menu-name">질문제 리딩 <span class="mbadge b-24">24H</span></span><span class="menu-price">5,000원/질문</span></div>
+        <div class="menu-info">질문당 5,000원 · 양식 제출 후 24시간 이내 리딩지 발송</div>
+      </div>
+      <div class="menu-card" data-menu="mixed" onclick="selMenu(this)">
+        <div class="menu-top"><span class="menu-name">혼합 리딩 <span class="mbadge b-24">24H+LIVE</span></span><span class="menu-price">5,000원 할인</span></div>
+        <div class="menu-info">실시간 + 질문제 자유 조합 · 합계에서 5,000원 할인<br>질문지 먼저 발송 → 24시간 이후 실시간 상담 진행</div>
+      </div>
+      <div class="menu-card" data-menu="solo" onclick="selMenu(this)">
+        <div class="menu-top"><span class="menu-name">솔로 패키지 <span class="mbadge b-48">48H</span></span><span class="menu-price">10,000원</span></div>
+        <div class="menu-info">양식 제출 후 48시간 이내 리딩지 발송</div>
+      </div>
+      <div class="menu-card" data-menu="reunion" onclick="selMenu(this)">
+        <div class="menu-top"><span class="menu-name">재회 패키지 <span class="mbadge b-48">48H</span></span><span class="menu-price">45,000원</span></div>
+        <div class="menu-info">양식 제출 후 48시간 이내 리딩지 발송</div>
+      </div>
+      <div class="menu-card" data-menu="weekly" onclick="selMenu(this)">
+        <div class="menu-top"><span class="menu-name">위클리 패키지 <span class="mbadge b-wk">7DAYS</span></span><span class="menu-price">70,000원</span></div>
+        <div class="menu-info">양식 제출 시점부터 7일 무제한 상담 · 실시간 하루 30분 한도<br>실시간 일정은 양식 제출 후 별도 협의</div>
+      </div>
+    </div>
+    <button class="btn" id="btn1" onclick="go(2)" disabled>다음 단계</button>
+  </div>
+
+  <!-- STEP 2 옵션 + 시간 -->
+  <div class="section" id="s2">
+    <div class="slabel">Step 2</div>
+    <h2 class="stitle" id="s2title">옵션 선택</h2>
+    <p class="sdesc" id="s2desc"></p>
+    <div id="optArea"></div>
+    <div id="timeArea" style="display:none">
+      <div class="olabel">예약 날짜</div>
+      <div class="date-row" id="dateRow"></div>
+      <div class="olabel" id="timeLabel">예약 시간</div>
+      <div class="tgrid" id="timeGrid"></div>
+    </div>
+    <div id="priceArea"></div>
+    <button class="btn-ghost" onclick="go(1)">← 이전</button>
+    <button class="btn" id="btn2" onclick="go(3)" disabled>다음 단계</button>
+  </div>
+
+  <!-- STEP 3 이름 + 결제 -->
+  <div class="section" id="s3">
+    <div class="slabel">Step 3</div>
+    <h2 class="stitle">예약자 정보 및 결제</h2>
+    <div class="notice" id="s3summary"></div>
+    <div class="igroup">
+      <label class="ilabel">이름</label>
+      <input class="ifield" id="nameInput" placeholder="이름을 입력해 주세요" oninput="chk3()">
+    </div>
+    <div class="slabel" style="margin-bottom:14px;">결제 방법</div>
+    <div class="pay-list">
+      <div class="pay-card" id="pm-account" onclick="selPay('account')">
+        <div class="pay-name">계좌이체</div>
+        <div class="pay-desc">아래 계좌로 입금 후 카카오톡 양식을 보내주세요</div>
+        <div class="account-box" id="acctBox">
+          <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
+          <div class="arow"><span class="akey">계좌번호</span><span class="aval">3333-XXXX-XXXX</span></div>
+          <div class="arow"><span class="akey">예금주</span><span class="aval">한서희</span></div>
+          <div class="arow"><span class="akey">입금액</span><span class="aval" id="acctAmt">—</span></div>
+        </div>
+      </div>
+      <div class="pay-card" id="pm-naver" onclick="selPay('naver')">
+        <div class="pay-name">네이버 스마트스토어</div>
+        <div class="pay-desc">스마트스토어 결제 후 카카오톡 양식을 보내주세요</div>
+      </div>
+    </div>
+    <div class="policy">
+      <strong>취소 / 환불 안내</strong><br>
+      · 실시간 리딩: 예약 시간 <strong>6시간 전</strong>까지 환불 가능<br>
+      · 실시간 리딩: 예약 시간 <strong>2시간 전</strong>까지 1회 일정 변경 가능<br>
+      · 그 외 메뉴: 상담 양식 제출 후 <strong>1시간 이내</strong> 환불 가능<br>
+      · 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
+    </div>
+    <button class="btn-ghost" onclick="go(2)">← 이전</button>
+    <button class="btn" id="btn3" onclick="go(4)" disabled>예약 완료</button>
+  </div>
+
+  <!-- STEP 4 완료 -->
+  <div class="section" id="s4">
+    <div class="complete">
+      <span class="c-icon">✨</span>
+      <div class="c-title">예약 접수 완료</div>
+      <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
+      <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 복사하여 카카오톡으로 보내주세요</span></div>
+      <div id="naverPayBtn"></div>
+      <a class="kakao-btn" href="https://pf.kakao.com/_INSERT_YOUR_CHANNEL" target="_blank">카카오톡 채널로 이동 →</a>
+      <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
+    </div>
+  </div>
+
+</div>
+<script>
+// ── 별 ──
+(()=>{const c=document.getElementById('stars');for(let i=0;i<55;i++){const s=document.createElement('span');const z=Math.random()*1.5+.4;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--dl:${Math.random()*6}s;`;c.appendChild(s);}})();
+
+// ── 상태 ──
+const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pay:null};
+
+const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunion:'재회 패키지',weekly:'위클리 패키지'};
+
+function adminData(){try{return JSON.parse(localStorage.getItem('hs_admin')||'{}');}catch(e){return {};}}
+
+// ── 메뉴 선택 ──
+function selMenu(el){
+  document.querySelectorAll('.menu-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  S.menu=el.dataset.menu;
+  S.dur=null;S.q=0;S.mixDur=null;S.date=null;S.dateObj=null;S.time=null;
+  document.getElementById('btn1').disabled=false;
+}
+
+// ── 스텝 이동 ──
+function go(n){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  updSteps(n);
+  if(n===2)buildS2();
+  if(n===3)buildS3();
+  if(n===4)buildS4();
+  window.scrollTo(0,0);
+}
+
+function updSteps(n){
+  [1,2,3,4].forEach(i=>{
+    const d=document.getElementById('sd'+i);
+    d.className='sdot'+(i<n?' done':i===n?' active':'');
+  });
+  [[1,2],[2,3],[3,4]].forEach(([a,b])=>{
+    const l=document.getElementById(`sl${a}${b}`);
+    if(l)l.className='sline'+(n>a?' done':'');
+  });
+}
+
+// ── STEP 2 ──
+function buildS2(){
+  const m=S.menu;
+  const titles={realtime:'시간 선택',question:'질문 수 선택',mixed:'옵션 선택',solo:'예약 확인',reunion:'예약 확인',weekly:'예약 확인'};
+  const descs={
+    realtime:'상담 시간과 예약 일정을 선택해 주세요',
+    question:'원하시는 질문 개수를 선택해 주세요 (질문당 5,000원)',
+    mixed:'실시간 시간과 질문 수를 자유롭게 조합하세요 · 합계 5,000원 할인',
+    solo:'솔로 패키지 · 10,000원 · 양식 제출 후 48시간 이내 리딩지 발송',
+    reunion:'재회 패키지 · 45,000원 · 양식 제출 후 48시간 이내 리딩지 발송',
+    weekly:'위클리 패키지 · 70,000원 · 양식 제출 시점부터 7일 무제한 상담\n실시간 하루 30분 한도 · 실시간 일정은 양식 제출 후 별도 협의',
+  };
+  document.getElementById('s2title').textContent=titles[m];
+  document.getElementById('s2desc').textContent=descs[m];
+  const oa=document.getElementById('optArea');
+  const ta=document.getElementById('timeArea');
+  oa.innerHTML='';ta.style.display='none';
+  document.getElementById('btn2').disabled=true;
+
+  if(m==='realtime'){
+    oa.innerHTML=`<div class="ogroup"><div class="olabel">상담 시간</div><div class="orow">
+      <button class="obtn" onclick="selDur(this,10)">10분 · 10,000원</button>
+      <button class="obtn" onclick="selDur(this,20)">20분 · 20,000원</button>
+      <button class="obtn" onclick="selDur(this,30)">30분 · 30,000원</button>
+    </div></div>`;
+  } else if(m==='question'){
+    oa.innerHTML=`<div class="ogroup"><div class="olabel">질문 수</div><div class="orow" id="qrow">
+      ${[1,2,3,4,5].map(n=>`<button class="obtn" onclick="selQ(this,${n})">${n}개 · ${(n*5000).toLocaleString()}원</button>`).join('')}
+    </div></div>`;
+  } else if(m==='mixed'){
+    oa.innerHTML=`
+      <div class="ogroup"><div class="olabel">실시간 시간 (선택 안함 가능)</div><div class="orow" id="mdrow">
+        <button class="obtn" onclick="selMD(this,0)">선택 안함</button>
+        <button class="obtn" onclick="selMD(this,10)">10분 · 10,000원</button>
+        <button class="obtn" onclick="selMD(this,20)">20분 · 20,000원</button>
+        <button class="obtn" onclick="selMD(this,30)">30분 · 30,000원</button>
+      </div></div>
+      <div class="ogroup"><div class="olabel">질문 수 (선택 안함 가능)</div><div class="orow" id="mqrow">
+        <button class="obtn" onclick="selMQ(this,0)">선택 안함</button>
+        ${[1,2,3,4,5].map(n=>`<button class="obtn" onclick="selMQ(this,${n})">${n}개 · ${(n*5000).toLocaleString()}원</button>`).join('')}
+      </div></div>`;
+  } else {
+    buildPrice();
+    document.getElementById('btn2').disabled=false;
+    return;
+  }
+  buildPrice();
+}
+
+function selDur(el,min){
+  document.querySelectorAll('#optArea .obtn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');S.dur=min;
+  showTime('realtime');buildPrice();
+}
+function selQ(el,n){
+  document.querySelectorAll('#qrow .obtn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');S.q=n;buildPrice();chk2();
+}
+function selMD(el,min){
+  document.querySelectorAll('#mdrow .obtn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');S.mixDur=min;
+  if(min>0)showTime('mixed');else{document.getElementById('timeArea').style.display='none';S.date=null;S.dateObj=null;S.time=null;}
+  buildPrice();chk2();
+}
+function selMQ(el,n){
+  document.querySelectorAll('#mqrow .obtn').forEach(b=>b.classList.remove('selected'));
+  el.classList.add('selected');S.q=n;buildPrice();chk2();
+}
+
+function showTime(type){
+  document.getElementById('timeArea').style.display='block';
+  const ahead=type==='mixed'?24:0;
+  const now=new Date();
+  const dr=document.getElementById('dateRow');
+  dr.innerHTML='';
+  for(let d=0;d<2;d++){
+    const dt=new Date(now);dt.setDate(dt.getDate()+d);
+    const btn=document.createElement('button');
+    btn.className='date-btn';
+    btn.innerHTML=`${d===0?'오늘':'내일'}<div class="date-day">${dt.getMonth()+1}/${dt.getDate()}(${['일','월','화','수','목','금','토'][dt.getDay()]})</div>`;
+    btn.onclick=()=>{
+      document.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      S.date=`${dt.getMonth()+1}월 ${dt.getDate()}일(${['일','월','화','수','목','금','토'][dt.getDay()]})`;
+      S.dateObj=dt;S.time=null;
+      loadSlots(dt,ahead);
+    };
+    dr.appendChild(btn);
+  }
+  document.getElementById('timeGrid').innerHTML='<div class="no-slots">날짜를 먼저 선택해 주세요</div>';
+  document.getElementById('timeLabel').textContent=type==='mixed'?'실시간 상담 시간 (예약 기준 24시간 이후만 선택 가능)':'예약 시간';
+}
+
+function loadSlots(dt,minHoursAhead){
+  const ad=adminData();
+  const dk=dt.toISOString().split('T')[0];
+  if(ad.closedDays?.[dk]){document.getElementById('timeGrid').innerHTML='<div class="no-slots">해당 날짜는 예약이 마감되었습니다</div>';return;}
+  const slots=ad.slots?.[dk];
+  if(!slots||!slots.length){document.getElementById('timeGrid').innerHTML='<div class="no-slots">예약 가능한 시간이 없습니다</div>';return;}
+  const now=new Date();
+  const grid=document.getElementById('timeGrid');
+  grid.innerHTML='';let has=false;
+  slots.forEach(t=>{
+    const [h,m]=t.split(':').map(Number);
+    const sd=new Date(dt);sd.setHours(h,m,0,0);
+    if((sd-now)/3600000<minHoursAhead)return;
+    if(dt.toDateString()===now.toDateString()&&sd<=now)return;
+    has=true;
+    const btn=document.createElement('button');
+    btn.className='tslot';btn.textContent=t;
+    const bk=`${dk}_${t}`;
+    if(ad.locked?.[bk])btn.classList.add('locked');
+    else if(ad.bookings?.[bk])btn.classList.add('taken');
+    else btn.onclick=()=>{
+      document.querySelectorAll('.tslot').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');S.time=t;chk2();
+    };
+    grid.appendChild(btn);
+  });
+  if(!has)grid.innerHTML='<div class="no-slots">조건에 맞는 시간이 없습니다</div>';
+}
+
+function calcPrice(){
+  const m=S.menu;
+  if(m==='realtime')return(S.dur||0)*1000;
+  if(m==='question')return S.q*5000;
+  if(m==='mixed'){const b=(S.mixDur||0)*1000+S.q*5000;return b>0?Math.max(0,b-5000):0;}
+  if(m==='solo')return 10000;
+  if(m==='reunion')return 45000;
+  if(m==='weekly')return 70000;
+  return 0;
+}
+
+function buildPrice(){
+  const m=S.menu;let rows='';
+  if(m==='realtime'&&S.dur)rows+=`<div class="prow"><span>실시간 리딩 (${S.dur}분)</span><span>${(S.dur*1000).toLocaleString()}원</span></div>`;
+  if(m==='question'&&S.q)rows+=`<div class="prow"><span>질문제 리딩 (${S.q}개)</span><span>${(S.q*5000).toLocaleString()}원</span></div>`;
+  if(m==='mixed'){
+    if(S.mixDur)rows+=`<div class="prow"><span>실시간 (${S.mixDur}분)</span><span>${(S.mixDur*1000).toLocaleString()}원</span></div>`;
+    if(S.q)rows+=`<div class="prow"><span>질문제 (${S.q}개)</span><span>${(S.q*5000).toLocaleString()}원</span></div>`;
+    if((S.mixDur||0)+(S.q||0)>0)rows+=`<div class="prow disc"><span>혼합 할인</span><span>-5,000원</span></div>`;
+  }
+  if(m==='solo')rows+=`<div class="prow"><span>솔로 패키지</span><span>10,000원</span></div>`;
+  if(m==='reunion')rows+=`<div class="prow"><span>재회 패키지</span><span>45,000원</span></div>`;
+  if(m==='weekly')rows+=`<div class="prow"><span>위클리 패키지</span><span>70,000원</span></div>`;
+  const total=calcPrice();
+  const pa=document.getElementById('priceArea');
+  if(rows)pa.innerHTML=`<div class="price-box">${rows}<div class="ptotal"><span class="ptotal-label">합계</span><span class="ptotal-amount">${total.toLocaleString()}원</span></div></div>`;
+  else pa.innerHTML='';
+}
+
+function chk2(){
+  const m=S.menu;let ok=false;
+  if(m==='realtime')ok=!!(S.dur&&S.date&&S.time);
+  else if(m==='question')ok=S.q>0;
+  else if(m==='mixed'){
+    const has=(S.mixDur||0)>0||S.q>0;
+    const needT=(S.mixDur||0)>0;
+    ok=has&&(!needT||(S.date&&S.time));
+  }
+  else ok=true;
+  document.getElementById('btn2').disabled=!ok;
+}
+
+// ── STEP 3 ──
+function buildS3(){
+  const m=S.menu;
+  let sum=MENU_NAMES[m];
+  if(m==='realtime')sum+=` · ${S.dur}분 · ${S.date} ${S.time}`;
+  if(m==='question')sum+=` · 질문 ${S.q}개`;
+  if(m==='mixed'){
+    if(S.mixDur)sum+=` · 실시간 ${S.mixDur}분`;
+    if(S.q)sum+=` · 질문 ${S.q}개`;
+    if(S.date&&S.time)sum+=` · ${S.date} ${S.time}`;
+  }
+  sum+=` · ${calcPrice().toLocaleString()}원`;
+  document.getElementById('s3summary').textContent=sum;
+  document.getElementById('acctAmt').textContent=calcPrice().toLocaleString()+'원';
+  document.getElementById('nameInput').value='';
+  S.name='';S.pay=null;
+  document.querySelectorAll('.pay-card').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('acctBox').classList.remove('show');
+  document.getElementById('btn3').disabled=true;
+}
+
+function selPay(t){
+  S.pay=t;
+  document.querySelectorAll('.pay-card').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('pm-'+t).classList.add('selected');
+  document.getElementById('acctBox').className='account-box'+(t==='account'?' show':'');
+  chk3();
+}
+function chk3(){S.name=document.getElementById('nameInput').value.trim();document.getElementById('btn3').disabled=!(S.name&&S.pay);}
+
+// ── STEP 4 ──
+function buildS4(){
+  const m=S.menu;
+  let info=`· 메뉴: ${MENU_NAMES[m]}\n`;
+  if(m==='realtime')info+=`· 예약 시간: ${S.date} ${S.time} (${S.dur}분)\n`;
+  if(m==='question')info+=`· 질문 수: ${S.q}개\n`;
+  if(m==='mixed'){
+    if(S.mixDur)info+=`· 실시간: ${S.date} ${S.time} (${S.mixDur}분)\n`;
+    if(S.q)info+=`· 질문 수: ${S.q}개\n`;
+  }
+  info+=`· 결제 금액: ${calcPrice().toLocaleString()}원\n`;
+  info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'네이버 스마트스토어'}`;
+
+  const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
+  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 카카오톡으로 보내주세요</span>${form}`;
+
+  const nb=document.getElementById('naverPayBtn');
+  nb.innerHTML=S.pay==='naver'?`<a class="naver-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">네이버 스마트스토어 결제 →</a>`:'';
+
+  // 예약 저장
+  if(S.date&&S.time&&S.dateObj){
+    const ad=adminData();
+    if(!ad.bookings)ad.bookings={};
+    const dk=S.dateObj.toISOString().split('T')[0];
+    const bk=`${dk}_${S.time}`;
+    ad.bookings[bk]={name:S.name,menu:MENU_NAMES[m],time:S.time,price:calcPrice(),ts:Date.now()};
+    localStorage.setItem('hs_admin',JSON.stringify(ad));
+  }
+}
+
+function resetAll(){
+  Object.assign(S,{menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pay:null});
+  document.querySelectorAll('.menu-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('btn1').disabled=true;
+  go(1);
+}
+</script>
+</body>
+</html>
