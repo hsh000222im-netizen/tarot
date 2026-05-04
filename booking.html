@@ -257,7 +257,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
       <div id="cardPayArea"></div>
       <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 복사하여 카카오톡으로 보내주세요</span></div>
-      <a class="kakao-btn" href="https://pf.kakao.com/_INSERT_YOUR_CHANNEL" target="_blank" id="kakaoBtn">카카오톡 채널로 이동 →</a>
+      <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank" id="kakaoBtn">카카오톡 채널로 이동 →</a>
       <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
     </div>
   </div>
@@ -500,16 +500,29 @@ function buildS4(){
       const dk=S.dateObj.toISOString().split('T')[0];
       const bk=`${dk}_${S.time}`;
       const blockedKeys=[];
-      // 상담 시간에 따라 추가 블락 (10분 = 1칸, 20분 = 2칸, 30분 = 3칸)
+      // 상담 시간에 따라 연속 블락 + 전후 10분 블락
       const slots=data.slots?.[dk]||[];
       const idx=slots.indexOf(S.time);
-      const blocks=dur/10;
+      const blocks=dur/10; // 상담 칸 수
+      // 상담 중 칸 블락 (시작 제외)
       for(let i=1;i<blocks;i++){
         if(slots[idx+i]){
           const blkKey=`${dk}_${slots[idx+i]}`;
           data.locked[blkKey+'_blocked']=true;
           blockedKeys.push(slots[idx+i]);
         }
+      }
+      // 상담 직후 10분 블락
+      if(slots[idx+blocks]){
+        const afterKey=`${dk}_${slots[idx+blocks]}`;
+        data.locked[afterKey+'_blocked']=true;
+        blockedKeys.push(slots[idx+blocks]);
+      }
+      // 상담 직전 10분 블락
+      if(idx>0 && slots[idx-1]){
+        const beforeKey=`${dk}_${slots[idx-1]}`;
+        data.locked[beforeKey+'_blocked']=true;
+        blockedKeys.push(slots[idx-1]);
       }
       data.bookings[bk]={
         name:S.name,menu:MENU_NAMES[m],menuKey:m,
