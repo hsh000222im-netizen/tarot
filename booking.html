@@ -108,7 +108,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .pay-card:hover{border-color:var(--border2);}
 .pay-card.selected{border-color:var(--gold2);background:rgba(200,164,86,.1);box-shadow:0 0 0 1px rgba(200,164,86,.3);}
 .pay-name{font-size:.92rem;color:#f0ead8;margin-bottom:4px;font-weight:500;}
-/* 2포인트 증가 반영 (기존 .7rem -> .85rem) */
 .pay-desc{font-size:.85rem;color:var(--text3);line-height:1.4;}
 .account-box{background:rgba(200,164,86,.05);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:12px;display:none;}
 .account-box.show{display:block;}
@@ -130,7 +129,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .c-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold2);margin-bottom:8px;}
 .c-desc{font-size:.76rem;color:var(--text3);line-height:1.9;margin-bottom:24px;}
 .form-tmpl{background:var(--bg2);border:1px solid rgba(200,164,86,.25);border-radius:11px;padding:18px;text-align:left;margin-bottom:16px;font-size:.82rem;color:#d0c8b0;line-height:2.2;white-space:pre-wrap;}
-/* 3포인트 증가 및 굵기 추가 반영 (기존 .62rem -> .85rem) */
 .ftitle{font-size:.85rem;letter-spacing:.05em;color:var(--gold);margin-bottom:10px;display:block;font-weight:500;}
 .kakao-btn{display:block;width:100%;background:#fee500;border:none;border-radius:10px;padding:13px;color:#3c1e1e;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
 .kakao-btn:hover{background:#fdd800;transform:translateY(-1px);}
@@ -139,10 +137,21 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 /* BTNS */
 .btn{width:100%;background:linear-gradient(135deg,#7a5810,var(--gold),#7a5810);border:none;border-radius:10px;padding:13px;color:#08070f;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .3s;box-shadow:0 4px 18px var(--glow);margin-top:4px;}
-.btn:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(200,164,86,.28);}
+.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 26px rgba(200,164,86,.28);}
 .btn:disabled{opacity:.38;cursor:not-allowed;transform:none;}
 .btn-ghost{width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text2);font-family:'Noto Serif KR',serif;font-size:.8rem;cursor:pointer;transition:all .2s;margin-bottom:8px;}
 .btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+
+/* CHECK BOOKING MODAL */
+.modal-bg { position:fixed; inset:0; background:rgba(8,7,15,0.85); z-index:999; display:none; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px); }
+.modal-bg.show { display:flex; animation:fadeIn 0.3s; }
+.modal-content { background:var(--bg2); border:1px solid var(--border); border-radius:12px; width:100%; max-width:400px; padding:24px; position:relative; max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
+.close-modal { position:absolute; top:14px; right:16px; background:none; border:none; color:var(--text3); font-size:1.5rem; cursor:pointer; line-height:1; padding:4px; }
+.close-modal:hover { color:var(--text); }
+.modal-title { font-family:'Cormorant Garamond',serif; font-size:1.5rem; color:var(--gold2); margin-bottom:20px; text-align:center; }
+.chk-res { display:none; margin-top:20px; padding-top:20px; border-top:1px solid rgba(200,164,86,.15); text-align:left; }
+.chk-res.show { display:block; animation:fadeUp 0.35s ease; }
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
 </style>
 </head>
 <body>
@@ -194,7 +203,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <div class="menu-info">양식 제출 시점부터 7일 무제한 상담 · 실시간 하루 30분 한도<br>실시간 일정은 양식 제출 후 별도 협의</div>
       </div>
     </div>
-    <button class="btn" id="btn1" onclick="go(2)" disabled>다음 단계</button>
+    <button class="btn" id="btn1" onclick="go(2)" disabled style="margin-bottom:12px;">다음 단계</button>
+    <!-- 내 예약 확인하기 버튼 추가 -->
+    <button class="btn-ghost" onclick="openCheckModal()">내 예약 확인하기</button>
   </div>
 
   <!-- STEP 2 -->
@@ -223,11 +234,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <label class="ilabel">이름</label>
       <input class="ifield" id="nameInput" placeholder="이름을 입력해 주세요" oninput="chk3()">
     </div>
+    <!-- 비밀번호 입력란 추가 -->
+    <div class="igroup">
+      <label class="ilabel">예약 확인용 비밀번호</label>
+      <input class="ifield" type="password" id="pwInput" maxlength="4" placeholder="비밀번호 4자리 (숫자)" oninput="chk3()">
+    </div>
+
     <div class="slabel" style="margin-bottom:14px;">결제 방법</div>
     <div class="pay-list">
       <div class="pay-card" id="pm-account" onclick="selPay('account')">
         <div class="pay-name">계좌이체</div>
-        <!-- 텍스트 수정됨 -->
         <div class="pay-desc">다음 화면에 보이는 계좌정보로 입금 후 양식을 제출해 주세요</div>
         <div class="account-box" id="acctBox">
           <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
@@ -238,7 +254,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="pay-card" id="pm-card" onclick="selPay('card')">
         <div class="pay-name">카드결제</div>
-        <!-- 텍스트 수정됨 -->
         <div class="pay-desc">다음 화면에 보이는 사이트에서 결제 후 양식을 제출해 주세요</div>
       </div>
     </div>
@@ -260,7 +275,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="c-title">예약 접수 완료</div>
       <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
       <div id="cardPayArea"></div>
-      <!-- 텍스트 수정됨 -->
       <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span></div>
       <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank" id="kakaoBtn">카카오톡 채널로 이동 →</a>
       <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
@@ -268,10 +282,29 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   </div>
 </div>
 
+<!-- 예약 조회 모달창 -->
+<div class="modal-bg" id="chkModal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="closeCheckModal()">×</button>
+    <div class="modal-title">예약 조회</div>
+    <div class="igroup">
+      <label class="ilabel">예약자 이름</label>
+      <input class="ifield" id="chkName" placeholder="예약 시 입력한 이름">
+    </div>
+    <div class="igroup">
+      <label class="ilabel">비밀번호</label>
+      <input class="ifield" type="password" id="chkPw" maxlength="4" placeholder="비밀번호 4자리">
+    </div>
+    <button class="btn" onclick="doCheck()">조회하기</button>
+
+    <div class="chk-res" id="chkResult"></div>
+  </div>
+</div>
+
 <script>
 (()=>{const c=document.getElementById('stars');for(let i=0;i<55;i++){const s=document.createElement('span');const z=Math.random()*1.5+.4;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--dl:${Math.random()*6}s;`;c.appendChild(s);}})();
 
-const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pay:null};
+const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pw:'',pay:null};
 const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunion:'재회 패키지',weekly:'위클리 패키지'};
 const MENU_KEYS={realtime:'realtime',question:'question',mixed:'mixed',solo:'solo',reunion:'reunion',weekly:'weekly'};
 
@@ -370,7 +403,6 @@ function showTime(type){
   dr.innerHTML='';
 
   if(type==='mixed'){
-    // 혼합: 내일 버튼만 + 현재시간 기준 24시간 이후
     const dt=new Date(now);dt.setDate(dt.getDate()+1);
     const btn=document.createElement('button');
     btn.className='date-btn';
@@ -384,7 +416,6 @@ function showTime(type){
     };
     dr.appendChild(btn);
     document.getElementById('timeLabel').textContent='실시간 상담 시간';
-    // 안내문구
     let notice=document.getElementById('mixedNotice');
     if(!notice){
       notice=document.createElement('div');
@@ -395,7 +426,6 @@ function showTime(type){
       document.getElementById('optArea').after(notice);
     }
   } else {
-    // 실시간: 오늘/내일 버튼
     for(let d=0;d<2;d++){
       const dt=new Date(now);dt.setDate(dt.getDate()+d);
       const btn=document.createElement('button');btn.className='date-btn';
@@ -491,8 +521,10 @@ function buildS3(){
   sum+=` · ${calcPrice().toLocaleString()}원`;
   document.getElementById('s3summary').textContent=sum;
   document.getElementById('acctAmt').textContent=calcPrice().toLocaleString()+'원';
+  
   document.getElementById('nameInput').value='';
-  S.name='';S.pay=null;
+  document.getElementById('pwInput').value='';
+  S.name='';S.pw='';S.pay=null;
   document.querySelectorAll('.pay-card').forEach(p=>p.classList.remove('selected'));
   document.getElementById('acctBox').classList.remove('show');
   document.getElementById('btn3').disabled=true;
@@ -505,7 +537,12 @@ function selPay(t){
   document.getElementById('acctBox').className='account-box'+(t==='account'?' show':'');
   chk3();
 }
-function chk3(){S.name=document.getElementById('nameInput').value.trim();document.getElementById('btn3').disabled=!(S.name&&S.pay);}
+
+function chk3(){
+  S.name=document.getElementById('nameInput').value.trim();
+  S.pw=document.getElementById('pwInput').value.trim();
+  document.getElementById('btn3').disabled=!(S.name && S.pw.length >= 4 && S.pay);
+}
 
 function buildS4(){
   const m=S.menu;
@@ -517,14 +554,13 @@ function buildS4(){
   info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
 
   const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
-  // 스크립트 쪽 텍스트 수정됨
   document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
   // 카드결제 버튼
   const cpa=document.getElementById('cardPayArea');
   cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
 
-  // 연속 타임 블락 처리
+  // 로컬스토리지 저장 로직 (pw 추가)
   if(S.dateObj&&S.time&&(m==='realtime'||m==='mixed')){
     const dur=m==='realtime'?S.dur:S.mixDur||0;
     if(dur>0){
@@ -534,11 +570,9 @@ function buildS4(){
       const dk=S.dateObj.toISOString().split('T')[0];
       const bk=`${dk}_${S.time}`;
       const blockedKeys=[];
-      // 상담 시간에 따라 연속 블락 + 전후 10분 블락
       const slots=data.slots?.[dk]||[];
       const idx=slots.indexOf(S.time);
-      const blocks=dur/10; // 상담 칸 수
-      // 상담 중 칸 블락 (시작 제외)
+      const blocks=dur/10; 
       for(let i=1;i<blocks;i++){
         if(slots[idx+i]){
           const blkKey=`${dk}_${slots[idx+i]}`;
@@ -546,44 +580,102 @@ function buildS4(){
           blockedKeys.push(slots[idx+i]);
         }
       }
-      // 상담 직후 10분 블락
       if(slots[idx+blocks]){
         const afterKey=`${dk}_${slots[idx+blocks]}`;
         data.locked[afterKey+'_blocked']=true;
         blockedKeys.push(slots[idx+blocks]);
       }
-      // 상담 직전 10분 블락
       if(idx>0 && slots[idx-1]){
         const beforeKey=`${dk}_${slots[idx-1]}`;
         data.locked[beforeKey+'_blocked']=true;
         blockedKeys.push(slots[idx-1]);
       }
       data.bookings[bk]={
-        name:S.name,menu:MENU_NAMES[m],menuKey:m,
-        time:S.time,dur:dur,price:calcPrice(),
-        blockedKeys,ts:Date.now()
+        name:S.name, pw:S.pw, pay:S.pay,
+        menu:MENU_NAMES[m], menuKey:m,
+        time:S.time, dur:dur, price:calcPrice(),
+        dateStr:S.date, mixDur:S.mixDur, q:S.q,
+        blockedKeys, ts:Date.now()
       };
       localStorage.setItem('hs_admin',JSON.stringify(data));
     }
   } else {
-    // 시간 없는 메뉴는 그냥 저장
     const data=aData();
     if(!data.bookings)data.bookings={};
     const bk=`other_${Date.now()}`;
     data.bookings[bk]={
-      name:S.name,menu:MENU_NAMES[m],menuKey:m,
-      price:calcPrice(),ts:Date.now()
+      name:S.name, pw:S.pw, pay:S.pay,
+      menu:MENU_NAMES[m], menuKey:m,
+      price:calcPrice(), q:S.q, ts:Date.now()
     };
     localStorage.setItem('hs_admin',JSON.stringify(data));
   }
 }
 
 function resetAll(){
-  Object.assign(S,{menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pay:null});
+  Object.assign(S,{menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pw:'',pay:null});
   document.querySelectorAll('.menu-card').forEach(c=>c.classList.remove('selected'));
   document.getElementById('btn1').disabled=true;
   document.getElementById('cardPayArea').innerHTML='';
   go(1);
+}
+
+// ── 내 예약 확인 모달 ──
+function openCheckModal(){
+  document.getElementById('chkName').value='';
+  document.getElementById('chkPw').value='';
+  document.getElementById('chkResult').classList.remove('show');
+  document.getElementById('chkModal').classList.add('show');
+}
+
+function closeCheckModal(){
+  document.getElementById('chkModal').classList.remove('show');
+}
+
+function doCheck(){
+  const n = document.getElementById('chkName').value.trim();
+  const p = document.getElementById('chkPw').value.trim();
+  if(!n || !p) { alert('이름과 비밀번호를 입력해 주세요.'); return; }
+
+  const data = aData();
+  const bookings = data.bookings || {};
+  // 가장 최근 예약순으로 정렬 후 일치하는 내역 찾기
+  const bks = Object.values(bookings).sort((a,b)=>(b.ts||0) - (a.ts||0));
+  const found = bks.find(b => b.name === n && b.pw === p);
+
+  if(!found) {
+    alert('입력하신 정보와 일치하는 예약 내역이 없습니다.');
+    return;
+  }
+
+  // 조회 결과 HTML 구성
+  let info = `· 메뉴: ${found.menu}\n`;
+  if(found.menuKey==='realtime') info+=`· 예약 시간: ${found.dateStr||''} ${found.time||''} (${found.dur||0}분)\n`;
+  if(found.menuKey==='question') info+=`· 질문 수: ${found.q||0}개\n`;
+  if(found.menuKey==='mixed'){
+    if(found.mixDur) info+=`· 실시간: ${found.dateStr||''} ${found.time||''} (${found.mixDur}분)\n`;
+    if(found.q) info+=`· 질문 수: ${found.q}개\n`;
+  }
+  info+=`· 결제 금액: ${(found.price||0).toLocaleString()}원\n`;
+  info+=`· 결제 방법: ${found.pay==='account'?'계좌이체':'카드결제'}`;
+
+  let html = `<div class="slabel">조회 결과</div>
+              <div style="font-size:.82rem; color:var(--text2); line-height:1.7; margin-bottom:16px;">${info.replace(/\n/g, '<br>')}</div>`;
+
+  if(found.pay === 'account') {
+    html += `<div class="account-box show" style="margin-bottom:16px;">
+               <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
+               <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;user-select:all;">3333-37-0910218</span></div>
+               <div class="arow"><span class="akey">예금주</span><span class="aval">한서희</span></div>
+               <div class="arow"><span class="akey">입금액</span><span class="aval">${(found.price||0).toLocaleString()}원</span></div>
+             </div>`;
+  }
+
+  const formStr = `📋 【예약 정보】\n이름: ${found.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
+  html += `<div class="form-tmpl" style="margin-bottom:0;"><span class="ftitle">✦ 제출 양식</span>${formStr}</div>`;
+
+  document.getElementById('chkResult').innerHTML = html;
+  document.getElementById('chkResult').classList.add('show');
 }
 </script>
 </body>
