@@ -6,7 +6,6 @@
 <title>Heet Signal · 관리자</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-/* 기존 스타일 유지 */
 :root{
   --bg:#08070f;--bg2:#0f0d1c;
   --gold:#c8a456;--gold2:#e8c87a;
@@ -299,14 +298,21 @@ function removeSlot(key,t){
   sad(data); renderDays();
 }
 
-// ── 예약 내역 렌더 ──
+// ── 예약 내역 렌더 (혼합 리딩 양쪽 노출 수정 완료) ──
 function renderBookings(){
   const data = ad();
   const bookings = data.bookings || {};
   const rt = [], others = [];
+  
   Object.entries(bookings).forEach(([k,b])=>{
-    if(b.menu==='실시간 리딩' || (b.menu==='혼합 리딩' && b.time)) rt.push({k,...b});
-    else others.push({k,...b});
+    // 1. 실시간 탭에 들어갈 조건
+    if(b.menu === '실시간 리딩' || (b.menu === '혼합 리딩' && b.time)) {
+      rt.push({k, ...b});
+    }
+    // 2. 그 외 탭에 들어갈 조건
+    if(b.menu !== '실시간 리딩') {
+      others.push({k, ...b});
+    }
   });
 
   const rtEl = document.getElementById('rtBookings');
@@ -396,39 +402,43 @@ function delBooking(k){
   const data = ad();
   if(data.bookings?.[k]){
     const b = data.bookings[k];
-    const parts = k.split('_');
-    const dk = parts[0]; 
-    const timeStr = parts[1];
     
-    // 1. 예약된 시간 본체 잠금 해제
-    delete data.locked[k];
+    // 만약 시간 데이터가 있는 예약(실시간, 혼합)이라면 버퍼 해제 로직 실행
+    if(k.includes('_')) {
+      const parts = k.split('_');
+      const dk = parts[0]; 
+      const timeStr = parts[1];
+      
+      // 1. 예약된 시간 본체 잠금 해제
+      delete data.locked[k];
 
-    // 2. 앞뒤 15분 버퍼 수동 해제 (기존 blockedKeys가 있든 없든 15분 단위로 체크)
-    const [h, m] = timeStr.split(':').map(Number);
-    const currentTotal = h * 60 + m;
-    
-    const prevTime = currentTotal - 15;
-    const nextTime = currentTotal + 15;
+      // 2. 앞뒤 15분 버퍼 수동 해제
+      const [h, m] = timeStr.split(':').map(Number);
+      const currentTotal = h * 60 + m;
+      
+      const prevTime = currentTotal - 15;
+      const nextTime = currentTotal + 15;
 
-    const toFmt = (min) => {
-        const hh = Math.floor(min/60);
-        const mm = min%60;
-        return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-    };
+      const toFmt = (min) => {
+          const hh = Math.floor(min/60);
+          const mm = min%60;
+          return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+      };
 
-    delete data.locked[`${dk}_${toFmt(prevTime)}_blocked`];
-    delete data.locked[`${dk}_${toFmt(nextTime)}_blocked`];
+      delete data.locked[`${dk}_${toFmt(prevTime)}_blocked`];
+      delete data.locked[`${dk}_${toFmt(nextTime)}_blocked`];
 
-    // 만약 b.blockedKeys가 명시적으로 있다면 그것도 삭제
-    if(b.blockedKeys){
-      b.blockedKeys.forEach(t=>{
-        delete data.locked[`${dk}_${t}_blocked`];
-      });
+      // 만약 b.blockedKeys가 명시적으로 있다면 그것도 삭제
+      if(b.blockedKeys){
+        b.blockedKeys.forEach(t=>{
+          delete data.locked[`${dk}_${t}_blocked`];
+        });
+      }
     }
   }
   delete data.bookings[k];
   sad(data); renderBookings(); renderDays();
-  showToast('삭제 완료 · 15분 버퍼 자동 해제');
+  showToast('삭제 완료');
 }
 
 function showToast(msg){
