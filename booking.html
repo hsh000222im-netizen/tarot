@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heet Signal · 타로 상담 예약</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- 🔥 Firebase SDK 추가 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -322,7 +321,6 @@ let globalData = {};
 
 const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pw:'',pay:null};
 const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunion:'재회 패키지',weekly:'위클리 패키지'};
-const MENU_KEYS={realtime:'realtime',question:'question',mixed:'mixed',solo:'solo',reunion:'reunion',weekly:'weekly'};
 
 db.ref('hs_admin').on('value', (snap) => {
   globalData = snap.val() || {};
@@ -333,7 +331,15 @@ db.ref('hs_admin').on('value', (snap) => {
 
 function aData() { return globalData; }
 
-// 🔥 로컬 시간 기준 날짜 변환 함수
+// 🔥 무조건 한국 시간(KST)으로 고정하는 함수
+function getKST(addDays = 0) {
+  const now = new Date();
+  const kstString = now.toLocaleString("en-US", {timeZone: "Asia/Seoul"});
+  const kstObj = new Date(kstString);
+  kstObj.setDate(kstObj.getDate() + addDays);
+  return kstObj;
+}
+
 function toFmtKey(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -429,12 +435,11 @@ function selMQ(el,n){
 
 function showTime(type){
   document.getElementById('timeArea').style.display='block';
-  const now=new Date();
   const dr=document.getElementById('dateRow');
   dr.innerHTML='';
 
   if(type==='mixed'){
-    const dt=new Date(now);dt.setDate(dt.getDate()+1);
+    const dt = getKST(1);
     const btn=document.createElement('button');
     btn.className='date-btn';
     btn.innerHTML=`내일<div class="date-day">${dt.getMonth()+1}/${dt.getDate()}(${['일','월','화','수','목','금','토'][dt.getDay()]})</div>`;
@@ -458,7 +463,7 @@ function showTime(type){
     }
   } else {
     for(let d=0;d<2;d++){
-      const dt=new Date(now);dt.setDate(dt.getDate()+d);
+      const dt = getKST(d);
       const btn=document.createElement('button');btn.className='date-btn';
       btn.innerHTML=`${d===0?'오늘':'내일'}<div class="date-day">${dt.getMonth()+1}/${dt.getDate()}(${['일','월','화','수','목','금','토'][dt.getDay()]})</div>`;
       btn.onclick=()=>{
@@ -484,7 +489,7 @@ function loadSlots(dt,minHoursAhead){
   const slots=data.slots?.[dk];
   if(!slots||!slots.length){document.getElementById('timeGrid').innerHTML='<div class="no-slots">예약 가능한 시간이 없습니다</div>';return;}
   
-  const now=new Date();
+  const nowKst = getKST(0);
   const grid=document.getElementById('timeGrid');grid.innerHTML='';let has=false;
 
   const dur = (S.menu === 'realtime' ? S.dur : (S.menu === 'mixed' ? S.mixDur : 0)) || 0;
@@ -492,24 +497,23 @@ function loadSlots(dt,minHoursAhead){
 
   slots.forEach((t, idx)=>{
     const [h,m]=t.split(':').map(Number);
-    const sd=new Date(dt);sd.setHours(h,m,0,0);
+    const sd=new Date(dt);
+    sd.setHours(h,m,0,0);
     
-    if((sd-now)/3600000<minHoursAhead)return;
+    // 시차 보정 후 완벽한 밀리초(시간) 차이 계산
+    if((sd.getTime() - nowKst.getTime())/3600000 < minHoursAhead) return;
     
-    const diffMinutes = (sd.getTime() - now.getTime()) / 60000;
+    const diffMinutes = (sd.getTime() - nowKst.getTime()) / 60000;
     if (diffMinutes < 45) return;
 
     has=true;
     
     let isAvailable = true;
     const bk=`${dk}_${t}`;
-    const isSelfTaken = data.bookings?.[bk];
-    const isSelfBlocked = data.locked?.[bk+'_blocked'];
-    const isSelfLocked = data.locked?.[bk];
-
-    if (isSelfTaken || isSelfBlocked || isSelfLocked) {
+    
+    if (data.bookings?.[bk] || data.locked?.[bk+'_blocked'] || data.locked?.[bk]) {
         isAvailable = false;
-    } else if (blocksNeeded > 1) {
+    } else {
         for (let i = 1; i < blocksNeeded; i++) {
             const nextSlot = slots[idx + i];
             if (!nextSlot) { 
@@ -517,7 +521,7 @@ function loadSlots(dt,minHoursAhead){
                 break; 
             }
             const nextBk = `${dk}_${nextSlot}`;
-            if (data.locked?.[nextBk] || data.locked?.[nextBk+'_blocked'] || data.bookings?.[nextBk]) {
+            if (data.bookings?.[nextBk] || data.locked?.[nextBk+'_blocked'] || data.locked?.[nextBk]) {
                 isAvailable = false; 
                 break;
             }
@@ -527,8 +531,8 @@ function loadSlots(dt,minHoursAhead){
     const btn=document.createElement('button');btn.className='tslot';btn.textContent=t;
     
     if(!isAvailable){
-      if(isSelfTaken) btn.classList.add('taken');
-      else if(isSelfBlocked) btn.classList.add('blocked');
+      if(data.bookings?.[bk]) btn.classList.add('taken');
+      else if(data.locked?.[bk+'_blocked']) btn.classList.add('blocked');
       else btn.classList.add('locked'); 
     } else {
       btn.onclick=()=>{
@@ -638,7 +642,7 @@ function buildS4(){
       const blockedKeys=[];
       const slots=data.slots?.[dk]||[];
       const idx=slots.indexOf(S.time);
-      const blocks=dur/10; 
+      const blocks=Math.ceil(dur / 15); 
       for(let i=1;i<blocks;i++){
         if(slots[idx+i]){
           const blkKey=`${dk}_${slots[idx+i]}`;
