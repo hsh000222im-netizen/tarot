@@ -108,7 +108,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .pay-card:hover{border-color:var(--border2);}
 .pay-card.selected{border-color:var(--gold2);background:rgba(200,164,86,.1);box-shadow:0 0 0 1px rgba(200,164,86,.3);}
 .pay-name{font-size:.92rem;color:#f0ead8;margin-bottom:4px;font-weight:500;}
-.pay-desc{font-size:.7rem;color:var(--text3);}
+/* 2포인트 증가 반영 (기존 .7rem -> .85rem) */
+.pay-desc{font-size:.85rem;color:var(--text3);line-height:1.4;}
 .account-box{background:rgba(200,164,86,.05);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:12px;display:none;}
 .account-box.show{display:block;}
 .arow{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px;}
@@ -129,7 +130,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .c-title{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--gold2);margin-bottom:8px;}
 .c-desc{font-size:.76rem;color:var(--text3);line-height:1.9;margin-bottom:24px;}
 .form-tmpl{background:var(--bg2);border:1px solid rgba(200,164,86,.25);border-radius:11px;padding:18px;text-align:left;margin-bottom:16px;font-size:.82rem;color:#d0c8b0;line-height:2.2;white-space:pre-wrap;}
-.ftitle{font-size:.62rem;letter-spacing:.18em;color:var(--gold);margin-bottom:10px;display:block;}
+/* 3포인트 증가 및 굵기 추가 반영 (기존 .62rem -> .85rem) */
+.ftitle{font-size:.85rem;letter-spacing:.05em;color:var(--gold);margin-bottom:10px;display:block;font-weight:500;}
 .kakao-btn{display:block;width:100%;background:#fee500;border:none;border-radius:10px;padding:13px;color:#3c1e1e;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
 .kakao-btn:hover{background:#fdd800;transform:translateY(-1px);}
 .card-pay-btn{display:block;width:100%;background:linear-gradient(135deg,#1a6b3c,#03c75a);border:none;border-radius:10px;padding:13px;color:#fff;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
@@ -225,7 +227,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="pay-list">
       <div class="pay-card" id="pm-account" onclick="selPay('account')">
         <div class="pay-name">계좌이체</div>
-        <div class="pay-desc">아래 계좌로 입금 후 다음화면의 양식을 카카오톡으로 보내주세요</div>
+        <!-- 텍스트 수정됨 -->
+        <div class="pay-desc">다음 화면에 보이는 계좌정보로 입금 후 양식을 제출해 주세요</div>
         <div class="account-box" id="acctBox">
           <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
           <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;text-decoration:none;user-select:all;">3333-37-0910218</span></div>
@@ -235,15 +238,16 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="pay-card" id="pm-card" onclick="selPay('card')">
         <div class="pay-name">카드결제</div>
-        <div class="pay-desc">다음 화면에 안내되는 스마트스토어 링크로 접속하여 결제해주세요</div>
+        <!-- 텍스트 수정됨 -->
+        <div class="pay-desc">다음 화면에 보이는 사이트에서 결제 후 양식을 제출해 주세요</div>
       </div>
     </div>
     <div class="policy">
       <strong>취소 / 환불 안내</strong><br>
-      · 실시간리딩: 예약 시간 <strong>6시간 전</strong>까지 환불 가능<br>
-      · 실시간리딩: 예약 시간 <strong>2시간 전</strong>까지 1회 일정 변경 가능<br>
-      · 그 외: 상담 양식 제출 후 <strong>1시간 이내</strong> 환불 가능<br>
-      · 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약취소
+      · 실시간 리딩: 예약 시간 <strong>6시간 전</strong>까지 환불 가능<br>
+      · 실시간 리딩: 예약 시간 <strong>2시간 전</strong>까지 1회 일정 변경 가능<br>
+      · 그 외 메뉴: 상담 양식 제출 후 <strong>1시간 이내</strong> 환불 가능<br>
+      · 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
     </div>
     <button class="btn-ghost" onclick="go(2)">← 이전</button>
     <button class="btn" id="btn3" onclick="go(4)" disabled>예약 완료</button>
@@ -256,7 +260,8 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="c-title">예약 접수 완료</div>
       <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
       <div id="cardPayArea"></div>
-      <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 '전체' 복사하여 카카오톡으로 보내주세요</span></div>
+      <!-- 텍스트 수정됨 -->
+      <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span></div>
       <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank" id="kakaoBtn">카카오톡 채널로 이동 →</a>
       <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
     </div>
@@ -512,7 +517,8 @@ function buildS4(){
   info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
 
   const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
-  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 카카오톡으로 보내주세요</span>${form}`;
+  // 스크립트 쪽 텍스트 수정됨
+  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
   // 카드결제 버튼
   const cpa=document.getElementById('cardPayArea');
