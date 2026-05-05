@@ -208,7 +208,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
     </div>
     <button class="btn" id="btn1" onclick="go(2)" disabled style="margin-bottom:12px;">다음 단계</button>
-    <!-- 내 예약 확인하기 버튼 추가 -->
     <button class="btn-ghost" onclick="openCheckModal()">내 예약 확인하기</button>
   </div>
 
@@ -238,7 +237,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <label class="ilabel">이름</label>
       <input class="ifield" id="nameInput" placeholder="이름을 입력해 주세요" oninput="chk3()">
     </div>
-    <!-- 비밀번호 입력란 추가 -->
     <div class="igroup">
       <label class="ilabel">예약 확인용 비밀번호</label>
       <input class="ifield" type="password" id="pwInput" maxlength="4" placeholder="비밀번호 4자리 (숫자)" oninput="chk3()">
@@ -308,7 +306,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <script>
 (()=>{const c=document.getElementById('stars');for(let i=0;i<55;i++){const s=document.createElement('span');const z=Math.random()*1.5+.4;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--dl:${Math.random()*6}s;`;c.appendChild(s);}})();
 
-// 🔥 Firebase 초기화
 const firebaseConfig = {
   apiKey: "AIzaSyB4WrXMra_eVmBMTDcJlROBvMGAN4DzRGo",
   authDomain: "heetsignal-21fee.firebaseapp.com",
@@ -327,7 +324,6 @@ const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,nam
 const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunion:'재회 패키지',weekly:'위클리 패키지'};
 const MENU_KEYS={realtime:'realtime',question:'question',mixed:'mixed',solo:'solo',reunion:'reunion',weekly:'weekly'};
 
-// 🔥 실시간 데이터베이스 감지
 db.ref('hs_admin').on('value', (snap) => {
   globalData = snap.val() || {};
   if(S.dateObj && document.getElementById('timeArea').style.display === 'block') {
@@ -336,6 +332,14 @@ db.ref('hs_admin').on('value', (snap) => {
 });
 
 function aData() { return globalData; }
+
+// 🔥 로컬 시간 기준 날짜 변환 함수
+function toFmtKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
 
 function selMenu(el){
   document.querySelectorAll('.menu-card').forEach(c=>c.classList.remove('selected'));
@@ -475,33 +479,63 @@ function showTime(type){
 
 function loadSlots(dt,minHoursAhead){
   const data=aData();
-  const dk=dt.toISOString().split('T')[0];
+  const dk = toFmtKey(dt);
   if(data.closedDays?.[dk]){document.getElementById('timeGrid').innerHTML='<div class="no-slots">해당 날짜는 예약이 마감되었습니다</div>';return;}
   const slots=data.slots?.[dk];
   if(!slots||!slots.length){document.getElementById('timeGrid').innerHTML='<div class="no-slots">예약 가능한 시간이 없습니다</div>';return;}
+  
   const now=new Date();
   const grid=document.getElementById('timeGrid');grid.innerHTML='';let has=false;
-  slots.forEach(t=>{
+
+  const dur = (S.menu === 'realtime' ? S.dur : (S.menu === 'mixed' ? S.mixDur : 0)) || 0;
+  const blocksNeeded = dur > 0 ? Math.ceil(dur / 15) : 1;
+
+  slots.forEach((t, idx)=>{
     const [h,m]=t.split(':').map(Number);
     const sd=new Date(dt);sd.setHours(h,m,0,0);
     
-    // 혼합 리딩 24시간 체크
     if((sd-now)/3600000<minHoursAhead)return;
     
-    // 🔥 현재 시간 기준 45분 미만의 시간대는 렌더링하지 않음 (45분 버퍼)
     const diffMinutes = (sd.getTime() - now.getTime()) / 60000;
     if (diffMinutes < 45) return;
 
     has=true;
-    const btn=document.createElement('button');btn.className='tslot';btn.textContent=t;
+    
+    let isAvailable = true;
     const bk=`${dk}_${t}`;
-    if(data.locked?.[bk])btn.classList.add('locked');
-    else if(data.locked?.[bk+'_blocked'])btn.classList.add('blocked');
-    else if(data.bookings?.[bk])btn.classList.add('taken');
-    else btn.onclick=()=>{
-      document.querySelectorAll('.tslot').forEach(b=>b.classList.remove('selected'));
-      btn.classList.add('selected');S.time=t;chk2();
-    };
+    const isSelfTaken = data.bookings?.[bk];
+    const isSelfBlocked = data.locked?.[bk+'_blocked'];
+    const isSelfLocked = data.locked?.[bk];
+
+    if (isSelfTaken || isSelfBlocked || isSelfLocked) {
+        isAvailable = false;
+    } else if (blocksNeeded > 1) {
+        for (let i = 1; i < blocksNeeded; i++) {
+            const nextSlot = slots[idx + i];
+            if (!nextSlot) { 
+                isAvailable = false; 
+                break; 
+            }
+            const nextBk = `${dk}_${nextSlot}`;
+            if (data.locked?.[nextBk] || data.locked?.[nextBk+'_blocked'] || data.bookings?.[nextBk]) {
+                isAvailable = false; 
+                break;
+            }
+        }
+    }
+
+    const btn=document.createElement('button');btn.className='tslot';btn.textContent=t;
+    
+    if(!isAvailable){
+      if(isSelfTaken) btn.classList.add('taken');
+      else if(isSelfBlocked) btn.classList.add('blocked');
+      else btn.classList.add('locked'); 
+    } else {
+      btn.onclick=()=>{
+        document.querySelectorAll('.tslot').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');S.time=t;chk2();
+      };
+    }
     grid.appendChild(btn);
   });
   if(!has)grid.innerHTML='<div class="no-slots">조건에 맞는 시간이 없습니다</div>';
@@ -599,7 +633,7 @@ function buildS4(){
     const dur=m==='realtime'?S.dur:S.mixDur||0;
     if(dur>0){
       if(!data.locked)data.locked={};
-      const dk=S.dateObj.toISOString().split('T')[0];
+      const dk = toFmtKey(S.dateObj);
       const bk=`${dk}_${S.time}`;
       const blockedKeys=[];
       const slots=data.slots?.[dk]||[];
