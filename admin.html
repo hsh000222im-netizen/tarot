@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heet Signal · 관리자</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- 🔥 Firebase SDK 추가 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -140,7 +139,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="toast" id="toast"></div>
 
 <script>
-// 🔥 Firebase 초기화 설정
+// 🔥 Firebase 설정
 const firebaseConfig = {
   apiKey: "AIzaSyB4WrXMra_eVmBMTDcJlROBvMGAN4DzRGo",
   authDomain: "heetsignal-21fee.firebaseapp.com",
@@ -173,7 +172,15 @@ function switchTab(t){
   if(t==='bookings') renderBookings();
 }
 
-// 🔥 현지 시간(KST)을 기준으로 YYYY-MM-DD를 반환하도록 포맷 변경
+// 🔥 무조건 한국 시간(KST)으로 고정하는 함수
+function getKST(addDays = 0) {
+  const now = new Date();
+  const kstString = now.toLocaleString("en-US", {timeZone: "Asia/Seoul"});
+  const kstObj = new Date(kstString);
+  kstObj.setDate(kstObj.getDate() + addDays);
+  return kstObj;
+}
+
 function fmtKey(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -182,8 +189,8 @@ function fmtKey(d) {
 }
 
 function getDates(){
-  const today = new Date();
-  const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+  const today = getKST(0);
+  const tomorrow = getKST(1);
   return [
     { label:'오늘', date:today, key:fmtKey(today) },
     { label:'내일', date:tomorrow, key:fmtKey(tomorrow) },
@@ -333,7 +340,9 @@ function renderBookings(){
       grouped[dk].push(b);
     });
     rtEl.innerHTML = Object.keys(grouped).sort().map(dk=>{
-      const dDate = new Date(dk);
+      // 🔥 날짜 파싱 오류 해결
+      const parts = dk.split('-');
+      const dDate = new Date(parts[0], parts[1]-1, parts[2]);
       const dlabel = `${dDate.getMonth()+1}/${dDate.getDate()}(${['일','월','화','수','목','금','토'][dDate.getDay()]})`;
       const items = grouped[dk].sort((a,b)=>a.time?.localeCompare(b.time));
       return `<div class="bk-date-group">
@@ -425,30 +434,23 @@ function delBooking(k){
   if(data.bookings?.[k]){
     const b = data.bookings[k];
     if(k.includes('_')) {
-      const parts = k.split('_');
-      const dk = parts[0]; 
-      const timeStr = parts[1];
       delete data.locked[k];
 
-      const [h, m] = timeStr.split(':').map(Number);
-      const currentTotal = h * 60 + m;
-      
-      const prevTime = currentTotal - 15;
-      const nextTime = currentTotal + 15;
-
-      const toFmt = (min) => {
-          const hh = Math.floor(min/60);
-          const mm = min%60;
-          return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-      };
-
-      delete data.locked[`${dk}_${toFmt(prevTime)}_blocked`];
-      delete data.locked[`${dk}_${toFmt(nextTime)}_blocked`];
-
       if(b.blockedKeys){
+        const dk = k.split('_')[0];
         b.blockedKeys.forEach(t=>{
           delete data.locked[`${dk}_${t}_blocked`];
         });
+      } else {
+         const parts = k.split('_');
+         const dk = parts[0]; 
+         const [h, m] = parts[1].split(':').map(Number);
+         const currentTotal = h * 60 + m;
+         const prevTime = currentTotal - 15;
+         const nextTime = currentTotal + 15;
+         const toFmt = (min) => `${String(Math.floor(min/60)).padStart(2,'0')}:${String(min%60).padStart(2,'0')}`;
+         delete data.locked[`${dk}_${toFmt(prevTime)}_blocked`];
+         delete data.locked[`${dk}_${toFmt(nextTime)}_blocked`];
       }
     }
   }
