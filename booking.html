@@ -327,11 +327,9 @@ const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,nam
 const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunion:'재회 패키지',weekly:'위클리 패키지'};
 const MENU_KEYS={realtime:'realtime',question:'question',mixed:'mixed',solo:'solo',reunion:'reunion',weekly:'weekly'};
 
-// 🔥 실시간 데이터베이스 감지 (고객 화면도 새로고침 없이 갱신)
+// 🔥 실시간 데이터베이스 감지
 db.ref('hs_admin').on('value', (snap) => {
   globalData = snap.val() || {};
-  
-  // 사용자가 시간 선택(Step 2) 화면을 보고 있다면 라이브로 갱신
   if(S.dateObj && document.getElementById('timeArea').style.display === 'block') {
       loadSlots(S.dateObj, S.menu === 'mixed' ? 24 : 0);
   }
@@ -486,8 +484,14 @@ function loadSlots(dt,minHoursAhead){
   slots.forEach(t=>{
     const [h,m]=t.split(':').map(Number);
     const sd=new Date(dt);sd.setHours(h,m,0,0);
+    
+    // 혼합 리딩 24시간 체크
     if((sd-now)/3600000<minHoursAhead)return;
-    if(dt.toDateString()===now.toDateString()&&sd<=now)return;
+    
+    // 🔥 현재 시간 기준 45분 미만의 시간대는 렌더링하지 않음 (45분 버퍼)
+    const diffMinutes = (sd.getTime() - now.getTime()) / 60000;
+    if (diffMinutes < 45) return;
+
     has=true;
     const btn=document.createElement('button');btn.className='tslot';btn.textContent=t;
     const bk=`${dk}_${t}`;
@@ -585,11 +589,9 @@ function buildS4(){
   const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
   document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
-  // 카드결제 버튼
   const cpa=document.getElementById('cardPayArea');
-  cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://mkt.shopping.naver.com/link/69f9aa055358056105d6b7b0">카드결제 (네이버 스마트스토어) →</a>`:'';
+  cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
 
-  // 🔥 로컬스토리지 대신 파이어베이스에 저장!
   const data=aData();
   if(!data.bookings)data.bookings={};
   
@@ -648,7 +650,6 @@ function resetAll(){
   go(1);
 }
 
-// ── 내 예약 확인 모달 ──
 function openCheckModal(){
   document.getElementById('chkName').value='';
   document.getElementById('chkPw').value='';
@@ -667,7 +668,6 @@ function doCheck(){
 
   const data = aData();
   const bookings = data.bookings || {};
-  // 가장 최근 예약순으로 정렬 후 일치하는 내역 찾기
   const bks = Object.values(bookings).sort((a,b)=>(b.ts||0) - (a.ts||0));
   const found = bks.find(b => b.name === n && b.pw === p);
 
@@ -676,7 +676,6 @@ function doCheck(){
     return;
   }
 
-  // 조회 결과 HTML 구성
   let info = `· 메뉴: ${found.menu}\n`;
   if(found.menuKey==='realtime') info+=`· 예약 시간: ${found.dateStr||''} ${found.time||''} (${found.dur||0}분)\n`;
   if(found.menuKey==='question') info+=`· 질문 수: ${found.q||0}개\n`;
