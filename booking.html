@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heet Signal · 타로 상담 예약</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- 🔥 Firebase SDK 추가 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <style>
 :root{
   --bg:#08070f;--bg2:#0f0d1c;--bg3:#161328;
@@ -244,7 +248,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="pay-list">
       <div class="pay-card" id="pm-account" onclick="selPay('account')">
         <div class="pay-name">계좌이체</div>
-        <div class="pay-desc">아래 계좌정보로 입금 후 다음화면의 양식을 제출</div>
+        <div class="pay-desc">다음 화면에 보이는 계좌정보로 입금 후 양식을 제출해 주세요</div>
         <div class="account-box" id="acctBox">
           <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
           <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;text-decoration:none;user-select:all;">3333-37-0910218</span></div>
@@ -254,7 +258,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="pay-card" id="pm-card" onclick="selPay('card')">
         <div class="pay-name">카드결제</div>
-        <div class="pay-desc">다음 화면 안내 사이트에서 결제 후 양식을 제출</div>
+        <div class="pay-desc">다음 화면에 보이는 사이트에서 결제 후 양식을 제출해 주세요</div>
       </div>
     </div>
     <div class="policy">
@@ -262,7 +266,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       · 실시간 리딩: 예약 시간 <strong>6시간 전</strong>까지 환불 가능<br>
       · 실시간 리딩: 예약 시간 <strong>2시간 전</strong>까지 1회 일정 변경 가능<br>
       · 그 외 메뉴: 상담 양식 제출 후 <strong>1시간 이내</strong> 환불 가능<br>
-      · <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
+      · 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
     </div>
     <button class="btn-ghost" onclick="go(2)">← 이전</button>
     <button class="btn" id="btn3" onclick="go(4)" disabled>예약 완료</button>
@@ -304,11 +308,36 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <script>
 (()=>{const c=document.getElementById('stars');for(let i=0;i<55;i++){const s=document.createElement('span');const z=Math.random()*1.5+.4;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--dl:${Math.random()*6}s;`;c.appendChild(s);}})();
 
+// 🔥 Firebase 초기화
+const firebaseConfig = {
+  apiKey: "AIzaSyB4WrXMra_eVmBMTDcJlROBvMGAN4DzRGo",
+  authDomain: "heetsignal-21fee.firebaseapp.com",
+  databaseURL: "https://heetsignal-21fee-default-rtdb.firebaseio.com",
+  projectId: "heetsignal-21fee",
+  storageBucket: "heetsignal-21fee.firebasestorage.app",
+  messagingSenderId: "164910959672",
+  appId: "1:164910959672:web:4cf2ce7d0cdf80a6a1aacd"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let globalData = {};
+
 const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pw:'',pay:null};
 const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunion:'재회 패키지',weekly:'위클리 패키지'};
 const MENU_KEYS={realtime:'realtime',question:'question',mixed:'mixed',solo:'solo',reunion:'reunion',weekly:'weekly'};
 
-function aData(){try{return JSON.parse(localStorage.getItem('hs_admin')||'{}');}catch(e){return {};}}
+// 🔥 실시간 데이터베이스 감지 (고객 화면도 새로고침 없이 갱신)
+db.ref('hs_admin').on('value', (snap) => {
+  globalData = snap.val() || {};
+  
+  // 사용자가 시간 선택(Step 2) 화면을 보고 있다면 라이브로 갱신
+  if(S.dateObj && document.getElementById('timeArea').style.display === 'block') {
+      loadSlots(S.dateObj, S.menu === 'mixed' ? 24 : 0);
+  }
+});
+
+function aData() { return globalData; }
 
 function selMenu(el){
   document.querySelectorAll('.menu-card').forEach(c=>c.classList.remove('selected'));
@@ -554,18 +583,19 @@ function buildS4(){
   info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
 
   const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
-  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 예약정보/상담양식을 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
+  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
   // 카드결제 버튼
   const cpa=document.getElementById('cardPayArea');
   cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
 
-  // 로컬스토리지 저장 로직 (pw 추가)
+  // 🔥 로컬스토리지 대신 파이어베이스에 저장!
+  const data=aData();
+  if(!data.bookings)data.bookings={};
+  
   if(S.dateObj&&S.time&&(m==='realtime'||m==='mixed')){
     const dur=m==='realtime'?S.dur:S.mixDur||0;
     if(dur>0){
-      const data=aData();
-      if(!data.bookings)data.bookings={};
       if(!data.locked)data.locked={};
       const dk=S.dateObj.toISOString().split('T')[0];
       const bk=`${dk}_${S.time}`;
@@ -597,18 +627,16 @@ function buildS4(){
         dateStr:S.date, mixDur:S.mixDur, q:S.q,
         blockedKeys, ts:Date.now()
       };
-      localStorage.setItem('hs_admin',JSON.stringify(data));
+      db.ref('hs_admin').set(data);
     }
   } else {
-    const data=aData();
-    if(!data.bookings)data.bookings={};
     const bk=`other_${Date.now()}`;
     data.bookings[bk]={
       name:S.name, pw:S.pw, pay:S.pay,
       menu:MENU_NAMES[m], menuKey:m,
       price:calcPrice(), q:S.q, ts:Date.now()
     };
-    localStorage.setItem('hs_admin',JSON.stringify(data));
+    db.ref('hs_admin').set(data);
   }
 }
 
