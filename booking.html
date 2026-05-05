@@ -244,7 +244,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="pay-list">
       <div class="pay-card" id="pm-account" onclick="selPay('account')">
         <div class="pay-name">계좌이체</div>
-        <div class="pay-desc">다음 화면에 보이는 계좌정보로 입금 후 양식을 제출해 주세요</div>
+        <div class="pay-desc">아래 계좌정보로 입금 후 다음화면의 양식을 제출</div>
         <div class="account-box" id="acctBox">
           <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
           <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;text-decoration:none;user-select:all;">3333-37-0910218</span></div>
@@ -254,7 +254,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="pay-card" id="pm-card" onclick="selPay('card')">
         <div class="pay-name">카드결제</div>
-        <div class="pay-desc">다음 화면에 보이는 사이트에서 결제 후 양식을 제출해 주세요</div>
+        <div class="pay-desc">다음 화면 안내 사이트에서 결제 후 양식을 제출</div>
       </div>
     </div>
     <div class="policy">
@@ -262,7 +262,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       · 실시간 리딩: 예약 시간 <strong>6시간 전</strong>까지 환불 가능<br>
       · 실시간 리딩: 예약 시간 <strong>2시간 전</strong>까지 1회 일정 변경 가능<br>
       · 그 외 메뉴: 상담 양식 제출 후 <strong>1시간 이내</strong> 환불 가능<br>
-      · 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
+      · <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
     </div>
     <button class="btn-ghost" onclick="go(2)">← 이전</button>
     <button class="btn" id="btn3" onclick="go(4)" disabled>예약 완료</button>
@@ -554,7 +554,7 @@ function buildS4(){
   info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
 
   const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
-  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
+  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 예약정보/상담양식을 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
   // 카드결제 버튼
   const cpa=document.getElementById('cardPayArea');
