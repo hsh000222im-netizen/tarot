@@ -225,7 +225,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="pay-list">
       <div class="pay-card" id="pm-account" onclick="selPay('account')">
         <div class="pay-name">계좌이체</div>
-        <div class="pay-desc">아래 계좌로 입금 후 카카오톡 양식을 보내주세요</div>
+        <div class="pay-desc">아래 계좌로 입금 후 다음화면의 양식을 카카오톡으로 보내주세요</div>
         <div class="account-box" id="acctBox">
           <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
           <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;text-decoration:none;user-select:all;">3333-37-0910218</span></div>
@@ -235,7 +235,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="pay-card" id="pm-card" onclick="selPay('card')">
         <div class="pay-name">카드결제</div>
-        <div class="pay-desc">다음 화면에 안내되는 스마트스토어 링크접속하여 결제해주세요</div>
+        <div class="pay-desc">다음 화면에 안내되는 스마트스토어 링크로 접속하여 결제해주세요</div>
       </div>
     </div>
     <div class="policy">
@@ -256,7 +256,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="c-title">예약 접수 완료</div>
       <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
       <div id="cardPayArea"></div>
-      <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 전체 복사하여 카카오톡으로 보내주세요</span></div>
+      <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 '전체' 복사하여 카카오톡으로 보내주세요</span></div>
       <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank" id="kakaoBtn">카카오톡 채널로 이동 →</a>
       <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
     </div>
