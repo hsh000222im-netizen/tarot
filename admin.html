@@ -236,7 +236,7 @@ function renderSlots(key, slots, locked, bookings){
     const isBlocked = locked[bk+'_blocked'];
     let cls = 's-open', badge = '가능';
     if(isTaken){ cls='s-taken'; badge='예약'; }
-    else if(isBlocked){ cls='s-blocked'; badge='연장'; }
+    else if(isBlocked){ cls='s-locked'; badge='버퍼'; }
     else if(isLocked){ cls='s-locked'; badge='잠금'; }
 
     const item = document.createElement('div');
@@ -400,14 +400,24 @@ function toggleForm(k){
 function delBooking(k){
   if(!confirm('예약을 삭제하시겠습니까?')) return;
   const data = ad();
-  // 연속 블락 해제
   if(data.bookings?.[k]){
     const b = data.bookings[k];
-    if(b.blockedKeys) b.blockedKeys.forEach(bk=>{ if(data.locked) delete data.locked[bk+'_blocked']; });
+    if(!data.locked) data.locked = {};
+    // 예약 키 자체 잠금 해제 (k = "2025-05-06_19:00")
+    delete data.locked[k];
+    // blockedKeys에 저장된 시간들의 _blocked 해제
+    if(b.blockedKeys){
+      // dk 추출: k에서 마지막 _time 부분 제거
+      const parts = k.split('_');
+      const dk = parts[0]; // "2025-05-06"
+      b.blockedKeys.forEach(t=>{
+        delete data.locked[`${dk}_${t}_blocked`];
+      });
+    }
   }
   delete data.bookings[k];
-  sad(data); renderBookings();
-  showToast('삭제되었습니다');
+  sad(data); renderBookings(); renderDays();
+  showToast('삭제 완료 · 블락 시간 자동 해제');
 }
 
 function showToast(msg){
