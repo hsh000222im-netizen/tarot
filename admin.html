@@ -86,7 +86,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .toggle-btn.recv{border-color:rgba(80,200,120,.4);background:rgba(80,200,120,.1);color:#80e0a0;}
 .toggle-btn.not-recv{border-color:rgba(220,80,80,.3);background:rgba(220,80,80,.07);color:#e08080;}
 
-.bk-other{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;background:rgba(15,13,28,.6);}
+/* OTHER BOOKING */
+.bk-other{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;background:rgba(15,13,28,.6); transition: all 0.3s;}
+/* 완료 상태 스타일 */
+.bk-other.completed { opacity: 0.45; filter: grayscale(70%); background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.05); }
+
 .bko-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
 .bko-name{font-size:.88rem;color:var(--text);}
 .bko-menu{font-size:.72rem;color:var(--gold);background:rgba(200,164,86,.08);border:1px solid rgba(200,164,86,.2);border-radius:4px;padding:2px 8px;}
@@ -96,8 +100,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .bko-recv-input{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.78rem;outline:none;width:160px;}
 .bko-recv-input:focus{border-color:var(--gold);}
 .bko-deadline{font-size:.76rem;padding:5px 12px;border-radius:6px;border:1px solid rgba(200,164,86,.25);background:rgba(200,164,86,.07);color:var(--gold2);}
+
+/* 삭제 / 완료 버튼 */
 .bk-del{background:none;border:1px solid rgba(220,80,80,.2);border-radius:6px;padding:3px 10px;color:#e08080;cursor:pointer;font-size:.68rem;transition:all .2s;}
 .bk-del:hover{background:rgba(220,80,80,.1);}
+.bk-comp{background:none;border:1px solid rgba(80,200,120,.3);border-radius:6px;padding:3px 10px;color:#80e0a0;cursor:pointer;font-size:.68rem;transition:all .2s;margin-right:4px;}
+.bk-comp:hover{background:rgba(80,200,120,.1);}
+
 .no-data{text-align:center;color:var(--text3);padding:24px;font-size:.78rem;border:1px dashed var(--border);border-radius:9px;}
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(80,200,120,.15);border:1px solid rgba(80,200,120,.35);border-radius:8px;padding:9px 22px;font-size:.76rem;color:#a0e0b0;display:none;z-index:999;white-space:nowrap;}
@@ -353,11 +362,19 @@ function renderBookings(){
     others.sort((a,b)=>(a.ts||0)-(b.ts||0));
     otherEl.innerHTML = others.map(b=>{
       const deadlineHtml = buildDeadline(b);
-      return `<div class="bk-other">
+      // 🔥 완료 상태 체크
+      const isComp = b.isCompleted;
+      const compClass = isComp ? 'completed' : '';
+      const compText = isComp ? '✓ 완료' : '완료 처리';
+
+      return `<div class="bk-other ${compClass}">
         <div class="bko-top">
           <span class="bko-name">${b.name||'—'}</span>
           <span class="bko-menu">${b.menu||'—'}</span>
-          <button class="bk-del" onclick="delBooking('${b.k}')">삭제</button>
+          <div>
+            <button class="bk-comp" onclick="toggleComplete('${b.k}')">${compText}</button>
+            <button class="bk-del" onclick="delBooking('${b.k}')">삭제</button>
+          </div>
         </div>
         <div style="font-size:.72rem;color:var(--text3);margin-bottom:8px;">접수: ${b.ts?new Date(b.ts).toLocaleString('ko-KR'):'-'} · ${(b.price||0).toLocaleString()}원</div>
         <div class="bko-recv-row">
@@ -394,6 +411,15 @@ function toggleForm(k){
   const data = ad();
   if(data.bookings?.[k]) data.bookings[k].formReceived = !data.bookings[k].formReceived;
   sad(data);
+}
+
+// 🔥 완료 상태 토글 함수 추가
+function toggleComplete(k){
+  const data = ad();
+  if(data.bookings?.[k]) {
+    data.bookings[k].isCompleted = !data.bookings[k].isCompleted;
+    sad(data);
+  }
 }
 
 function delBooking(k){
