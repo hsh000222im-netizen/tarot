@@ -310,7 +310,8 @@ function renderBookings(){
   const rt = [], others = [];
   Object.entries(bookings).forEach(([k,b])=>{
     if(b.menu==='실시간 리딩') rt.push({k,...b});
-    else others.push({k,...b});
+    else if(b.menu==='혼합 리딩' && b.time) rt.push({k,...b});
+    if(b.menu!=='실시간 리딩') others.push({k,...b});
   });
 
   // 실시간: 날짜별 시간순 정렬
