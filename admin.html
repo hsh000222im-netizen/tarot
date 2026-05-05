@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heet Signal · 관리자</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
-<!-- 🔥 Firebase SDK (v8 호환 버전) 추가 -->
+<!-- 🔥 Firebase SDK 추가 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -86,9 +86,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .toggle-btn.recv{border-color:rgba(80,200,120,.4);background:rgba(80,200,120,.1);color:#80e0a0;}
 .toggle-btn.not-recv{border-color:rgba(220,80,80,.3);background:rgba(220,80,80,.07);color:#e08080;}
 
-/* OTHER BOOKING */
 .bk-other{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:8px;background:rgba(15,13,28,.6); transition: all 0.3s;}
-/* 완료 상태 스타일 */
 .bk-other.completed { opacity: 0.45; filter: grayscale(70%); background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.05); }
 
 .bko-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
@@ -101,14 +99,12 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .bko-recv-input:focus{border-color:var(--gold);}
 .bko-deadline{font-size:.76rem;padding:5px 12px;border-radius:6px;border:1px solid rgba(200,164,86,.25);background:rgba(200,164,86,.07);color:var(--gold2);}
 
-/* 삭제 / 완료 버튼 */
 .bk-del{background:none;border:1px solid rgba(220,80,80,.2);border-radius:6px;padding:3px 10px;color:#e08080;cursor:pointer;font-size:.68rem;transition:all .2s;}
 .bk-del:hover{background:rgba(220,80,80,.1);}
 .bk-comp{background:none;border:1px solid rgba(80,200,120,.3);border-radius:6px;padding:3px 10px;color:#80e0a0;cursor:pointer;font-size:.68rem;transition:all .2s;margin-right:4px;}
 .bk-comp:hover{background:rgba(80,200,120,.1);}
 
 .no-data{text-align:center;color:var(--text3);padding:24px;font-size:.78rem;border:1px dashed var(--border);border-radius:9px;}
-
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(80,200,120,.15);border:1px solid rgba(80,200,120,.35);border-radius:8px;padding:9px 22px;font-size:.76rem;color:#a0e0b0;display:none;z-index:999;white-space:nowrap;}
 </style>
 </head>
@@ -159,19 +155,14 @@ const db = firebase.database();
 
 let globalData = {};
 
-// 🔥 실시간 데이터베이스 감지 (값이 바뀔 때마다 화면 자동 갱신)
 db.ref('hs_admin').on('value', (snap) => {
   globalData = snap.val() || {};
   if(document.getElementById('dayPanels')) renderDays();
   if(document.getElementById('rtBookings')) renderBookings();
 });
 
-// 기존의 localStorage를 대체하는 함수
 function ad() { return globalData; }
-function sad(d) {
-  // 로컬 스토리지 대신 파이어베이스에 저장합니다.
-  db.ref('hs_admin').set(d);
-}
+function sad(d) { db.ref('hs_admin').set(d); }
 
 const MENU_DEADLINE = { question:24, mixed:24, solo:48, reunion:48, weekly:168 };
 
@@ -182,6 +173,14 @@ function switchTab(t){
   if(t==='bookings') renderBookings();
 }
 
+// 🔥 현지 시간(KST)을 기준으로 YYYY-MM-DD를 반환하도록 포맷 변경
+function fmtKey(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 function getDates(){
   const today = new Date();
   const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
@@ -190,7 +189,7 @@ function getDates(){
     { label:'내일', date:tomorrow, key:fmtKey(tomorrow) },
   ];
 }
-function fmtKey(d){ return d.toISOString().split('T')[0]; }
+
 function fmtLabel(d){ return `${d.getMonth()+1}/${d.getDate()}(${['일','월','화','수','목','금','토'][d.getDay()]})`; }
 
 function renderDays(){
@@ -281,7 +280,7 @@ function genSlots(key){
   if(!data.slots) data.slots={};
   data.slots[key] = slots;
   sad(data);
-  showToast(`${slots.length}개 시간대 생성 완료 (15분 단위)`);
+  showToast(`${slots.length}개 시간대 생성 완료`);
 }
 
 function toggleClose(key){
@@ -362,7 +361,6 @@ function renderBookings(){
     others.sort((a,b)=>(a.ts||0)-(b.ts||0));
     otherEl.innerHTML = others.map(b=>{
       const deadlineHtml = buildDeadline(b);
-      // 🔥 완료 상태 체크
       const isComp = b.isCompleted;
       const compClass = isComp ? 'completed' : '';
       const compText = isComp ? '✓ 완료' : '완료 처리';
@@ -413,7 +411,6 @@ function toggleForm(k){
   sad(data);
 }
 
-// 🔥 완료 상태 토글 함수 추가
 function toggleComplete(k){
   const data = ad();
   if(data.bookings?.[k]) {
