@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Heet Signal · 관리자</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Noto+Serif+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- 🔥 Firebase SDK (v8 호환 버전) 추가 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <style>
 :root{
   --bg:#08070f;--bg2:#0f0d1c;
@@ -16,15 +20,6 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;font-weight:300;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 10%,rgba(100,80,160,.07),transparent 55%);pointer-events:none;z-index:0;}
-
-.pw-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px;}
-.pw-box{max-width:300px;width:100%;text-align:center;}
-.pw-title{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold2);letter-spacing:.2em;margin-bottom:6px;}
-.pw-sub{font-size:.65rem;color:var(--text3);letter-spacing:.35em;text-transform:uppercase;margin-bottom:28px;}
-.pw-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:9px;padding:12px 16px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.9rem;outline:none;text-align:center;letter-spacing:.15em;margin-bottom:10px;}
-.pw-input:focus{border-color:var(--gold);}
-.pw-err{font-size:.72rem;color:#e08080;margin-bottom:10px;display:none;}
-.pw-btn{width:100%;background:linear-gradient(135deg,#7a5810,var(--gold),#7a5810);border:none;border-radius:9px;padding:12px;color:#08070f;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;}
 
 .wrap{position:relative;z-index:1;max-width:680px;margin:0 auto;padding:36px 20px 80px;}
 .admin-header{text-align:center;margin-bottom:32px;}
@@ -107,7 +102,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(80,200,120,.15);border:1px solid rgba(80,200,120,.35);border-radius:8px;padding:9px 22px;font-size:.76rem;color:#a0e0b0;display:none;z-index:999;white-space:nowrap;}
 </style>
-
 </head>
 <body>
 
@@ -121,13 +115,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="tab" onclick="switchTab('bookings')">예약 내역</div>
   </div>
 
-  <!-- 시간 관리 -->
   <div class="tab-panel active" id="tab-slots">
     <div class="plabel">날짜별 시간 설정 (15분 단위)</div>
     <div id="dayPanels"></div>
   </div>
 
-  <!-- 예약 내역 -->
   <div class="tab-panel" id="tab-bookings">
     <div class="bk-section">
       <div class="bk-section-title">📡 실시간 상담</div>
@@ -143,14 +135,36 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="toast" id="toast"></div>
 
 <script>
-// --- 설정 및 유틸 ---
-const MENU_DEADLINE = { question:24, mixed:24, solo:48, reunion:48, weekly:168 };
-function ad(){ try{ return JSON.parse(localStorage.getItem('hs_admin')||'{}'); } catch(e){ return {}; } }
-function sad(d){ localStorage.setItem('hs_admin', JSON.stringify(d)); }
+// 🔥 Firebase 초기화 설정
+const firebaseConfig = {
+  apiKey: "AIzaSyB4WrXMra_eVmBMTDcJlROBvMGAN4DzRGo",
+  authDomain: "heetsignal-21fee.firebaseapp.com",
+  databaseURL: "https://heetsignal-21fee-default-rtdb.firebaseio.com",
+  projectId: "heetsignal-21fee",
+  storageBucket: "heetsignal-21fee.firebasestorage.app",
+  messagingSenderId: "164910959672",
+  appId: "1:164910959672:web:4cf2ce7d0cdf80a6a1aacd"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-window.addEventListener('DOMContentLoaded',()=>{
-  renderDays();
+let globalData = {};
+
+// 🔥 실시간 데이터베이스 감지 (값이 바뀔 때마다 화면 자동 갱신)
+db.ref('hs_admin').on('value', (snap) => {
+  globalData = snap.val() || {};
+  if(document.getElementById('dayPanels')) renderDays();
+  if(document.getElementById('rtBookings')) renderBookings();
 });
+
+// 기존의 localStorage를 대체하는 함수
+function ad() { return globalData; }
+function sad(d) {
+  // 로컬 스토리지 대신 파이어베이스에 저장합니다.
+  db.ref('hs_admin').set(d);
+}
+
+const MENU_DEADLINE = { question:24, mixed:24, solo:48, reunion:48, weekly:168 };
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['slots','bookings'][i]===t));
@@ -170,7 +184,6 @@ function getDates(){
 function fmtKey(d){ return d.toISOString().split('T')[0]; }
 function fmtLabel(d){ return `${d.getMonth()+1}/${d.getDate()}(${['일','월','화','수','목','금','토'][d.getDay()]})`; }
 
-// ── 시간 관리 렌더 ──
 function renderDays(){
   const data = ad();
   const container = document.getElementById('dayPanels');
@@ -214,21 +227,18 @@ function renderSlots(key, slots, locked, bookings){
     const bk = `${key}_${t}`;
     const isLocked = locked[bk];
     const isTaken = bookings[bk];
-    const isBlocked = locked[bk+'_blocked']; // 예약에 의한 자동 버퍼
+    const isBlocked = locked[bk+'_blocked'];
     
     let cls = 's-open', badge = '가능';
     if(isTaken){ cls='s-taken'; badge='예약'; }
-    else if(isBlocked){ cls='s-blocked'; badge='버퍼'; } // 버퍼 스타일링
-    else if(isLocked){ cls='s-locked'; badge='잠금'; } // 수동 잠금
+    else if(isBlocked){ cls='s-blocked'; badge='버퍼'; }
+    else if(isLocked){ cls='s-locked'; badge='잠금'; }
 
     const item = document.createElement('div');
     item.className = `slot-item ${cls}`;
     item.innerHTML = `<span class="st">${t}</span><span class="sb">${badge}</span>`;
     
-    // 예약된 시간이 아니면 수동 잠금/해제 가능
-    if(!isTaken) {
-        item.onclick = ()=>toggleLock(key,t);
-    }
+    if(!isTaken) { item.onclick = ()=>toggleLock(key,t); }
 
     if(!isTaken){
       const x = document.createElement('button');
@@ -240,7 +250,6 @@ function renderSlots(key, slots, locked, bookings){
   });
 }
 
-// 15분 단위 생성
 function genSlots(key){
   const startVal = document.getElementById('gs-'+key).value.trim();
   const endVal = document.getElementById('ge-'+key).value.trim();
@@ -255,14 +264,14 @@ function genSlots(key){
   if(startMin===null||endMin===null||startMin>=endMin){ showToast('올바른 시간을 입력해 주세요'); return; }
   
   const slots = [];
-  for(let cur=startMin; cur<endMin; cur+=15){ // 15분 단위
+  for(let cur=startMin; cur<endMin; cur+=15){
     const h=Math.floor(cur/60); const m=cur%60;
     slots.push(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`);
   }
   const data = ad();
   if(!data.slots) data.slots={};
   data.slots[key] = slots;
-  sad(data); renderDays();
+  sad(data);
   showToast(`${slots.length}개 시간대 생성 완료 (15분 단위)`);
 }
 
@@ -270,7 +279,7 @@ function toggleClose(key){
   const data = ad();
   if(!data.closedDays) data.closedDays={};
   data.closedDays[key] = !data.closedDays[key];
-  sad(data); renderDays();
+  sad(data);
   showToast(data.closedDays[key]?'하루 전체 마감':'마감 해제');
 }
 
@@ -279,7 +288,6 @@ function toggleLock(key,t){
   if(!data.locked) data.locked={};
   const bk = `${key}_${t}`;
   
-  // 만약 자동 버퍼(_blocked)가 걸려있는 곳을 클릭하면 버퍼를 수동으로 해제할 수 있게 함
   if(data.locked[bk+'_blocked']){
       delete data.locked[bk+'_blocked'];
       showToast('버퍼 잠금 해제');
@@ -287,32 +295,24 @@ function toggleLock(key,t){
       data.locked[bk] = !data.locked[bk];
       if(!data.locked[bk]) delete data.locked[bk];
   }
-  
-  sad(data); renderDays();
+  sad(data);
 }
 
 function removeSlot(key,t){
   const data = ad();
   if(!data.slots?.[key]) return;
   data.slots[key] = data.slots[key].filter(s=>s!==t);
-  sad(data); renderDays();
+  sad(data);
 }
 
-// ── 예약 내역 렌더 (혼합 리딩 양쪽 노출 수정 완료) ──
 function renderBookings(){
   const data = ad();
   const bookings = data.bookings || {};
   const rt = [], others = [];
   
   Object.entries(bookings).forEach(([k,b])=>{
-    // 1. 실시간 탭에 들어갈 조건
-    if(b.menu === '실시간 리딩' || (b.menu === '혼합 리딩' && b.time)) {
-      rt.push({k, ...b});
-    }
-    // 2. 그 외 탭에 들어갈 조건
-    if(b.menu !== '실시간 리딩') {
-      others.push({k, ...b});
-    }
+    if(b.menu === '실시간 리딩' || (b.menu === '혼합 리딩' && b.time)) rt.push({k, ...b});
+    if(b.menu !== '실시간 리딩') others.push({k, ...b});
   });
 
   const rtEl = document.getElementById('rtBookings');
@@ -387,32 +387,26 @@ function setRecvTime(k){
   if(!val) return;
   const data = ad();
   if(data.bookings?.[k]) data.bookings[k].formRecvTime = val;
-  sad(data); renderBookings();
+  sad(data);
 }
 
 function toggleForm(k){
   const data = ad();
   if(data.bookings?.[k]) data.bookings[k].formReceived = !data.bookings[k].formReceived;
-  sad(data); renderBookings();
+  sad(data);
 }
 
-// ── 삭제 시 앞뒤 15분 버퍼 자동 해제 ──
 function delBooking(k){
   if(!confirm('예약을 삭제하시겠습니까?')) return;
   const data = ad();
   if(data.bookings?.[k]){
     const b = data.bookings[k];
-    
-    // 만약 시간 데이터가 있는 예약(실시간, 혼합)이라면 버퍼 해제 로직 실행
     if(k.includes('_')) {
       const parts = k.split('_');
       const dk = parts[0]; 
       const timeStr = parts[1];
-      
-      // 1. 예약된 시간 본체 잠금 해제
       delete data.locked[k];
 
-      // 2. 앞뒤 15분 버퍼 수동 해제
       const [h, m] = timeStr.split(':').map(Number);
       const currentTotal = h * 60 + m;
       
@@ -428,7 +422,6 @@ function delBooking(k){
       delete data.locked[`${dk}_${toFmt(prevTime)}_blocked`];
       delete data.locked[`${dk}_${toFmt(nextTime)}_blocked`];
 
-      // 만약 b.blockedKeys가 명시적으로 있다면 그것도 삭제
       if(b.blockedKeys){
         b.blockedKeys.forEach(t=>{
           delete data.locked[`${dk}_${t}_blocked`];
@@ -437,7 +430,7 @@ function delBooking(k){
     }
   }
   delete data.bookings[k];
-  sad(data); renderBookings(); renderDays();
+  sad(data);
   showToast('삭제 완료');
 }
 
@@ -447,6 +440,5 @@ function showToast(msg){
   setTimeout(()=>t.style.display='none', 2500);
 }
 </script>
-
 </body>
 </html>
