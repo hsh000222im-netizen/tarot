@@ -122,9 +122,6 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .policy{background:rgba(255,255,255,.03);border:1px solid rgba(200,164,86,.2);border-radius:9px;padding:16px 18px;margin-bottom:18px;font-size:.76rem;color:#a8a090;line-height:2;}
 .policy strong{color:#d8ceb8;}
 
-/* NOTICE */
-.notice{background:rgba(200,164,86,.08);border-left:3px solid rgba(200,164,86,.7);padding:13px 16px;font-size:.8rem;color:#d0c8b0;line-height:1.85;border-radius:0 8px 8px 0;margin-bottom:18px;}
-
 /* COMPLETE */
 .complete{text-align:center;padding:28px 0;}
 .c-icon{font-size:2.6rem;display:block;margin-bottom:14px;animation:float 3s ease-in-out infinite;}
@@ -133,8 +130,14 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .c-desc{font-size:.76rem;color:var(--text3);line-height:1.9;margin-bottom:24px;}
 .form-tmpl{background:var(--bg2);border:1px solid rgba(200,164,86,.25);border-radius:11px;padding:18px;text-align:left;margin-bottom:16px;font-size:.82rem;color:#d0c8b0;line-height:2.2;white-space:pre-wrap;}
 .ftitle{font-size:.85rem;letter-spacing:.05em;color:var(--gold);margin-bottom:10px;display:block;font-weight:500;}
+
+/* KAKAO BTNS */
 .kakao-btn{display:block;width:100%;background:#fee500;border:none;border-radius:10px;padding:13px;color:#3c1e1e;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
 .kakao-btn:hover{background:#fdd800;transform:translateY(-1px);}
+
+.kakao-btn-dark{display:block;width:100%;background:#3c1e1e;border:none;border-radius:10px;padding:13px;color:#fee500;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:16px;}
+.kakao-btn-dark:hover{background:#2a1515;transform:translateY(-1px);}
+
 .card-pay-btn{display:block;width:100%;background:linear-gradient(135deg,#1a6b3c,#03c75a);border:none;border-radius:10px;padding:13px;color:#fff;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
 .card-pay-btn:hover{opacity:.9;transform:translateY(-1px);}
 
@@ -277,7 +280,11 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
       <div id="cardPayArea"></div>
       <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span></div>
-      <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank" id="kakaoBtn">카카오톡 채널로 이동 →</a>
+      
+      <!-- 🔥 카카오톡 버튼 2개로 분리 -->
+      <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank">💬 카카오톡 공개프로필 채팅으로 보내기 →</a>
+      <a class="kakao-btn-dark" href="https://open.kakao.com/o/sz4BZIti" target="_blank">🔒 카카오톡 비공개 오픈채팅으로 보내기 →</a>
+
       <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
     </div>
   </div>
@@ -331,7 +338,6 @@ db.ref('hs_admin').on('value', (snap) => {
 
 function aData() { return globalData; }
 
-// 🔥 무조건 한국 시간(KST)으로 고정하는 함수
 function getKST(addDays = 0) {
   const now = new Date();
   const kstString = now.toLocaleString("en-US", {timeZone: "Asia/Seoul"});
@@ -500,7 +506,6 @@ function loadSlots(dt,minHoursAhead){
     const sd=new Date(dt);
     sd.setHours(h,m,0,0);
     
-    // 시차 보정 후 완벽한 밀리초(시간) 차이 계산
     if((sd.getTime() - nowKst.getTime())/3600000 < minHoursAhead) return;
     
     const diffMinutes = (sd.getTime() - nowKst.getTime()) / 60000;
