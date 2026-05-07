@@ -9,101 +9,162 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
-:root{
-  --bg:#08070f;--bg2:#0f0d1c;--bg3:#161328;
-  --gold:#c8a456;--gold2:#e8c87a;--gold3:#f5dfa0;
-  --text:#f0ead8;--text2:#d0c8b0;--text3:#a09888;
-  --border:rgba(200,164,86,.18);--border2:rgba(200,164,86,.38);
-  --glow:rgba(200,164,86,.14);
+:root {
+  --bg: #08070f;
+  --bg2: #0f0d1c;
+  --bg3: #161328;
+  --gold: #c8a456;
+  --gold2: #e8c87a;
+  --gold3: #f5dfa0;
+  --text: #f0ead8;
+  --text2: #d0c8b0;
+  --text3: #a09888;
+  --border: rgba(200,164,86,0.18);
+  --border2: rgba(200,164,86,0.38);
+  --glow: rgba(200,164,86,0.14);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;min-height:100vh;font-weight:300;}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 10%,rgba(100,80,160,.07),transparent 55%),radial-gradient(ellipse at 85% 90%,rgba(80,60,130,.05),transparent 55%);pointer-events:none;z-index:0;}
-#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
-#stars span{position:absolute;border-radius:50%;background:#fff;animation:tw var(--d,3s) var(--dl,0s) infinite ease-in-out;}
-@keyframes tw{0%,100%{opacity:.07;}50%{opacity:.45;}}
-.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:48px 20px 80px;}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Serif KR', serif; min-height: 100vh; font-weight: 300; }
+body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 15% 10%, rgba(100,80,160,.07), transparent 55%), radial-gradient(ellipse at 85% 90%, rgba(80,60,130,.05), transparent 55%); pointer-events: none; z-index: 0; }
+#stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+#stars span { position: absolute; border-radius: 50%; background: #fff; animation: tw var(--d,3s) var(--dl,0s) infinite ease-in-out; }
+@keyframes tw { 0%, 100% { opacity: .07; } 50% { opacity: .45; } }
+.wrap { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; padding: 48px 20px 80px; }
 
 /* HEADER */
-.site-header{text-align:center;margin-bottom:44px;}
-.site-name{font-family:'Cormorant Garamond',serif;font-size:clamp(1.9rem,6vw,2.8rem);font-weight:300;letter-spacing:.28em;color:var(--gold2);display:block;margin-bottom:8px;}
-.site-sub{font-size:.65rem;letter-spacing:.45em;color:var(--text3);text-transform:uppercase;}
-.hdiv{display:flex;align-items:center;gap:14px;margin:12px auto 16px;max-width:180px;}
-.hdiv::before,.hdiv::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);}
-.hdiv span{color:var(--gold);font-size:.8rem;opacity:.6;}
+.site-header { text-align: center; margin-bottom: 44px; }
+.site-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.9rem, 6vw, 2.8rem); font-weight: 300; letter-spacing: .28em; color: var(--gold2); display: block; margin-bottom: 8px; }
+.site-sub { font-size: .65rem; letter-spacing: .45em; color: var(--text3); text-transform: uppercase; }
+.hdiv { display: flex; align-items: center; gap: 14px; margin: 12px auto 16px; max-width: 180px; }
+.hdiv::before, .hdiv::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--gold), transparent); }
+.hdiv span { color: var(--gold); font-size: .8rem; opacity: .6; }
 
 /* STEPS */
-.steps{display:flex;justify-content:center;align-items:center;gap:0;margin-bottom:36px;}
-.sdot{width:26px;height:26px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--text3);transition:all .3s;background:var(--bg);}
-.sdot.active{border-color:var(--gold);color:var(--gold);box-shadow:0 0 10px var(--glow);}
-.sdot.done{border-color:rgba(200,164,86,.5);background:rgba(200,164,86,.1);color:var(--gold2);}
-.sline{width:36px;height:1px;background:var(--border);transition:background .3s;}
-.sline.done{background:rgba(200,164,86,.4);}
+.steps { display: flex; justify-content: center; align-items: center; gap: 0; margin-bottom: 36px; }
+.sdot { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: .6rem; color: var(--text3); transition: all .3s; background: var(--bg); }
+.sdot.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px var(--glow); }
+.sdot.done { border-color: rgba(200,164,86,.5); background: rgba(200,164,86,.1); color: var(--gold2); }
+.sline { width: 36px; height: 1px; background: var(--border); transition: background .3s; }
+.sline.done { background: rgba(200,164,86,.4); }
 
 /* SECTIONS */
-.section{display:none;}
-.section.active{display:block;animation:fadeUp .35s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.slabel{font-size:.62rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
-.slabel::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
-.stitle{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:400;color:var(--gold2);margin-bottom:8px;letter-spacing:.04em;}
-.sdesc{font-size:.82rem;color:#a8a090;line-height:1.8;margin-bottom:26px;}
+.section { display: none; }
+.section.active { display: block; animation: fadeUp .35s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.slabel { font-size: .62rem; letter-spacing: .3em; color: var(--gold); text-transform: uppercase; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+.slabel::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
+.stitle { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 400; color: var(--gold2); margin-bottom: 8px; letter-spacing: .04em; }
+.sdesc { font-size: .82rem; color: #a8a090; line-height: 1.8; margin-bottom: 26px; }
 
 /* MENU CARDS */
-.menu-grid{display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
-.menu-card{border:1px solid var(--border);border-radius:11px;padding:16px 18px;cursor:pointer;transition:all .22s;background:rgba(15,13,28,.6);position:relative;overflow:hidden;}
-.menu-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 0%,var(--glow),transparent 65%);opacity:0;transition:opacity .22s;}
-.menu-card:hover{border-color:var(--border2);}
-.menu-card:hover::after,.menu-card.selected::after{opacity:1;}
-.menu-card.selected{border-color:var(--gold2);background:rgba(200,164,86,.12);box-shadow:0 0 0 1px rgba(200,164,86,.4),0 4px 20px rgba(200,164,86,.15);}
-.menu-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-.menu-name{font-size:.92rem;font-weight:500;color:#f0ead8;}
-.menu-price{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--gold2);}
-.menu-info{font-size:.72rem;color:#a8a090;line-height:1.8;margin-top:2px;}
-.mbadge{display:inline-block;font-size:.56rem;letter-spacing:.08em;padding:2px 7px;border-radius:3px;margin-left:6px;vertical-align:middle;}
-.b-rt{background:rgba(200,164,86,.1);color:var(--gold);border:1px solid rgba(200,164,86,.22);}
-.b-24{background:rgba(100,150,210,.1);color:#90b8e0;border:1px solid rgba(100,150,210,.2);}
-.b-48{background:rgba(150,100,200,.1);color:#b890e0;border:1px solid rgba(150,100,200,.2);}
-.b-wk{background:rgba(200,100,150,.1);color:#e090b8;border:1px solid rgba(200,100,150,.2);}
+.menu-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.menu-card { border: 1px solid var(--border); border-radius: 11px; padding: 18px; cursor: pointer; transition: all .22s; background: rgba(15,13,28,.6); position: relative; overflow: hidden; }
+.menu-card::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 0% 0%, var(--glow), transparent 65%); opacity: 0; transition: opacity .22s; }
+.menu-card:hover { border-color: var(--border2); }
+.menu-card:hover::after, .menu-card.selected::after { opacity: 1; }
+.menu-card.selected { border-color: var(--gold2); background: rgba(200,164,86,.12); box-shadow: 0 0 0 1px rgba(200,164,86,.4), 0 4px 20px rgba(200,164,86,.15); }
+.menu-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.menu-name { font-size: 1rem; font-weight: 500; color: #f0ead8; }
+.menu-price { font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; color: var(--gold2); }
+.menu-info { font-size: .78rem; color: #a8a090; line-height: 1.6; margin-top: 4px; }
+.mbadge { display: inline-block; font-size: .6rem; letter-spacing: .08em; padding: 3px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.b-rt { background: rgba(200,164,86,.1); color: var(--gold); border: 1px solid rgba(200,164,86,.22); }
+.b-24 { background: rgba(100,150,210,.1); color: #90b8e0; border: 1px solid rgba(100,150,210,.2); }
+.b-48 { background: rgba(150,100,200,.1); color: #b890e0; border: 1px solid rgba(150,100,200,.2); }
+.b-wk { background: rgba(200,100,150,.1); color: #e090b8; border: 1px solid rgba(200,100,150,.2); }
 
 /* OPT */
-.obtn{border:1.5px solid rgba(200,164,86,.4);border-radius:10px;padding:10px 16px;cursor:pointer;background:rgba(255,255,255,.04);color:#d8ceb8 !important;font-family:'Noto Serif KR',serif;font-size:.82rem;transition:all .2s;-webkit-appearance:none;appearance:none;}
-.obtn.selected{border-color:var(--gold2) !important;color:#08070f !important;background:rgba(200,164,86,.75) !important;font-weight:600;}
-.date-btn{flex:1;border:1.5px solid rgba(200,164,86,.4);border-radius:10px;padding:12px 8px;cursor:pointer;background:rgba(255,255,255,.04);color:#d0c8b0;font-family:'Noto Serif KR',serif;font-size:.82rem;text-align:center;transition:all .2s;}
-.date-btn.selected{border-color:var(--gold2) !important;color:#08070f !important;background:rgba(200,164,86,.75) !important;font-weight:600;}
-.tslot{border:1.5px solid rgba(200,164,86,.4);border-radius:8px;padding:8px 14px;cursor:pointer;background:rgba(255,255,255,.04);color:#d0c8b0;font-family:'Noto Serif KR',serif;font-size:.8rem;transition:all .2s;}
-.tslot.selected{border-color:var(--gold2) !important;color:#08070f !important;background:rgba(200,164,86,.75) !important;font-weight:600;}
-.tslot.locked,.tslot.taken,.tslot.blocked{opacity:.3;cursor:not-allowed;}
-.tslot.taken{color:#c08080;border-color:rgba(200,80,80,.15);}
-.tslot.blocked{color:#c0a0e0;border-color:rgba(180,120,220,.2);}
-.price-box{border:1px solid var(--border);border-radius:11px;padding:18px;background:rgba(200,164,86,.03);margin-bottom:22px;}
-.prow{display:flex;justify-content:space-between;font-size:.8rem;color:var(--text2);margin-bottom:7px;}
-.prow.disc{color:#98c080;}
-.ptotal{display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border);margin-top:4px;}
-.ptotal-amount{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold2);}
-.ifield{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:11px 15px;color:var(--text);font-family:'Noto Serif KR',serif;font-size:.85rem;outline:none;}
+.ogroup { margin-bottom: 22px; }
+.olabel { font-size: .8rem; color: #c8bea8; margin-bottom: 12px; letter-spacing: .05em; font-weight: 500; }
+.orow { display: flex; flex-wrap: wrap; gap: 8px; }
+.obtn { border: 1.5px solid rgba(200,164,86,.4); border-radius: 10px; padding: 12px 18px; cursor: pointer; background: rgba(255,255,255,.04); color: #d8ceb8 !important; font-family: 'Noto Serif KR', serif; font-size: .85rem; transition: all .2s; -webkit-appearance: none; appearance: none; }
+.obtn:hover { border-color: rgba(200,164,86,.7); color: #f0ead8 !important; background: rgba(200,164,86,.1); }
+.obtn.selected { border-color: var(--gold2) !important; color: #08070f !important; background: rgba(200,164,86,.75) !important; font-weight: 600; }
+
+/* DATE/TIME */
+.date-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.date-btn { flex: 1; border: 1.5px solid rgba(200,164,86,.4); border-radius: 10px; padding: 14px 10px; cursor: pointer; background: rgba(255,255,255,.04); color: #d0c8b0; font-family: 'Noto Serif KR', serif; font-size: .9rem; text-align: center; transition: all .2s; }
+.date-btn:hover { border-color: var(--border2); }
+.date-btn.selected { border-color: var(--gold2) !important; color: #08070f !important; background: rgba(200,164,86,.75) !important; font-weight: 600; }
+.date-day { font-size: .7rem; color: var(--text3); margin-top: 4px; }
+.tgrid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.tslot { border: 1.5px solid rgba(200,164,86,.4); border-radius: 8px; padding: 10px 16px; cursor: pointer; background: rgba(255,255,255,.04); color: #d0c8b0; font-family: 'Noto Serif KR', serif; font-size: .85rem; transition: all .2s; }
+.tslot:hover:not(.locked):not(.taken) { border-color: var(--border2); color: var(--text); }
+.tslot.selected { border-color: var(--gold2) !important; color: #08070f !important; background: rgba(200,164,86,.75) !important; font-weight: 600; }
+.tslot.locked, .tslot.taken, .tslot.blocked { opacity: .3; cursor: not-allowed; }
+.tslot.taken { color: #c08080; border-color: rgba(200,80,80,.15); }
+.tslot.blocked { color: #c0a0e0; border-color: rgba(180,120,220,.2); }
+.no-slots { font-size: .8rem; color: var(--text3); padding: 16px; text-align: center; border: 1px dashed var(--border); border-radius: 8px; }
+
+/* PRICE */
+.price-box { border: 1px solid var(--border); border-radius: 11px; padding: 20px; background: rgba(200,164,86,.03); margin-bottom: 24px; }
+.prow { display: flex; justify-content: space-between; font-size: .85rem; color: var(--text2); margin-bottom: 8px; }
+.prow.disc { color: #98c080; }
+.ptotal { display: flex; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--border); margin-top: 6px; }
+.ptotal-label { font-size: .9rem; color: var(--text); }
+.ptotal-amount { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold2); }
+
+/* INPUT */
+.igroup { margin-bottom: 20px; }
+.ilabel { font-size: .75rem; color: var(--text2); letter-spacing: .1em; display: block; margin-bottom: 8px; }
+.ifield { width: 100%; background: rgba(255,255,255,.04); border: 1px solid var(--border); border-radius: 8px; padding: 13px 16px; color: var(--text); font-family: 'Noto Serif KR', serif; font-size: .9rem; outline: none; transition: border-color .2s; }
+.ifield:focus { border-color: var(--gold); }
+.ifield::placeholder { color: var(--text3); }
+
+/* PAYMENT */
+.pay-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+.pay-card { border: 1px solid var(--border); border-radius: 11px; padding: 18px 20px; cursor: pointer; transition: all .2s; background: rgba(15,13,28,.6); }
+.pay-card:hover { border-color: var(--border2); }
+.pay-card.selected { border-color: var(--gold2); background: rgba(200,164,86,.1); box-shadow: 0 0 0 1px rgba(200,164,86,.3); }
+.pay-name { font-size: 1rem; color: #f0ead8; margin-bottom: 6px; font-weight: 500; }
+.pay-desc { font-size: .85rem; color: var(--text3); line-height: 1.5; }
+.account-box { background: rgba(200,164,86,.05); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; margin-top: 14px; display: none; }
+.account-box.show { display: block; }
+.arow { display: flex; justify-content: space-between; font-size: .85rem; margin-bottom: 8px; }
+.akey { color: var(--text3); }
+.aval { color: var(--gold2); font-weight: 500; text-decoration: none; }
+
+/* POLICY */
+.policy { background: rgba(255,255,255,.03); border: 1px solid rgba(200,164,86,.2); border-radius: 9px; padding: 18px 20px; margin-bottom: 20px; font-size: .8rem; color: #a8a090; line-height: 2; }
+.policy strong { color: #d8ceb8; }
+
+/* NOTICE */
+.notice { background: rgba(200,164,86,.08); border-left: 3px solid rgba(200,164,86,.7); padding: 15px 18px; font-size: .85rem; color: #d0c8b0; line-height: 1.85; border-radius: 0 8px 8px 0; margin-bottom: 20px; }
+
+/* COMPLETE */
+.complete { text-align: center; padding: 32px 0; }
+.c-icon { font-size: 3rem; display: block; margin-bottom: 18px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.c-title { font-family: 'Cormorant Garamond', serif; font-size: 1.9rem; color: var(--gold2); margin-bottom: 12px; }
+.c-desc { font-size: .85rem; color: var(--text3); line-height: 1.9; margin-bottom: 28px; }
+.form-tmpl { background: var(--bg2); border: 1px solid rgba(200,164,86,.25); border-radius: 11px; padding: 20px; text-align: left; margin-bottom: 20px; font-size: .85rem; color: #d0c8b0; line-height: 2.2; white-space: pre-wrap; }
+.ftitle { font-size: .9rem; letter-spacing: .05em; color: var(--gold); margin-bottom: 12px; display: block; font-weight: 500; }
 
 /* KAKAO BTNS */
-.kakao-btn{display:block;width:100%;background:#fee500;border:none;border-radius:10px;padding:13px;color:#3c1e1e;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:9px;}
-.kakao-btn:hover{background:#fdd800;transform:translateY(-1px);}
-.kakao-btn-dark{display:block;width:100%;background:#3c1e1e;border:none;border-radius:10px;padding:13px;color:#fee500;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;text-align:center;transition:all .2s;margin-bottom:16px;}
-.kakao-btn-dark:hover{background:#2a1515;transform:translateY(-1px);}
+.kakao-btn { display: block; width: 100%; background: #fee500; border: none; border-radius: 10px; padding: 15px; color: #3c1e1e; font-family: 'Noto Serif KR', serif; font-size: .95rem; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: all .2s; margin-bottom: 10px; }
+.kakao-btn:hover { background: #fdd800; transform: translateY(-1px); }
+.kakao-btn-dark { display: block; width: 100%; background: #3c1e1e; border: none; border-radius: 10px; padding: 15px; color: #fee500; font-family: 'Noto Serif KR', serif; font-size: .95rem; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: all .2s; margin-bottom: 18px; }
+.kakao-btn-dark:hover { background: #2a1515; transform: translateY(-1px); }
+.card-pay-btn { display: block; width: 100%; background: linear-gradient(135deg,#1a6b3c,#03c75a); border: none; border-radius: 10px; padding: 15px; color: #fff; font-family: 'Noto Serif KR', serif; font-size: .95rem; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; transition: all .2s; margin-bottom: 10px; }
+.card-pay-btn:hover { opacity: .9; transform: translateY(-1px); }
 
 /* BTNS */
-.btn{width:100%;background:linear-gradient(135deg,#7a5810,var(--gold),#7a5810);border:none;border-radius:10px;padding:13px;color:#08070f;font-family:'Noto Serif KR',serif;font-size:.88rem;font-weight:600;cursor:pointer;letter-spacing:.04em;transition:all .3s;box-shadow:0 4px 18px var(--glow);margin-top:4px;}
-.btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 6px 26px rgba(200,164,86,.28);}
-.btn:disabled{opacity:.38;cursor:not-allowed;transform:none;}
-.btn-ghost{width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text2);font-family:'Noto Serif KR',serif;font-size:.8rem;cursor:pointer;transition:all .2s;margin-bottom:8px;}
+.btn { width: 100%; background: linear-gradient(135deg,#7a5810,var(--gold),#7a5810); border: none; border-radius: 10px; padding: 15px; color: #08070f; font-family: 'Noto Serif KR', serif; font-size: .95rem; font-weight: 600; cursor: pointer; letter-spacing: .04em; transition: all .3s; box-shadow: 0 4px 18px var(--glow); margin-top: 6px; }
+.btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 26px rgba(200,164,86,.28); }
+.btn:disabled { opacity: .38; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-ghost { width: 100%; background: transparent; border: 1px solid var(--border); border-radius: 10px; padding: 13px; color: var(--text2); font-family: 'Noto Serif KR', serif; font-size: .85rem; cursor: pointer; transition: all .2s; margin-bottom: 10px; }
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
 
 /* CHECK BOOKING MODAL */
-.modal-bg { position:fixed; inset:0; background:rgba(8,7,15,0.85); z-index:999; display:none; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px); }
-.modal-bg.show { display:flex; animation:fadeIn 0.3s; }
-.modal-content { background:var(--bg2); border:1px solid var(--border); border-radius:12px; width:100%; max-width:400px; padding:24px; position:relative; max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.5); }
-.close-modal { position:absolute; top:14px; right:16px; background:none; border:none; color:var(--text3); font-size:1.5rem; cursor:pointer; line-height:1; padding:4px; }
-.chk-res { display:none; margin-top:20px; padding-top:20px; border-top:1px solid rgba(200,164,86,.15); text-align:left; }
-.chk-res.show { display:block; animation:fadeUp 0.35s ease; }
-@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+.modal-bg { position: fixed; inset: 0; background: rgba(8,7,15,0.85); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(5px); }
+.modal-bg.show { display: flex; animation: fadeIn 0.3s; }
+.modal-content { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 400px; padding: 28px; position: relative; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+.close-modal { position: absolute; top: 16px; right: 20px; background: none; border: none; color: var(--text3); font-size: 1.8rem; cursor: pointer; line-height: 1; padding: 4px; }
+.close-modal:hover { color: var(--text); }
+.modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; color: var(--gold2); margin-bottom: 24px; text-align: center; }
+.chk-res { display: none; margin-top: 24px; padding-top: 24px; border-top: 1px solid rgba(200,164,86,.15); text-align: left; }
+.chk-res.show { display: block; animation: fadeUp 0.35s ease; }
 </style>
 </head>
 <body>
@@ -128,6 +189,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="slabel">Step 1</div>
     <h2 class="stitle">상담 메뉴 선택</h2>
     <p class="sdesc">원하시는 상담 유형을 선택해 주세요</p>
+    
     <div class="menu-grid">
       <div class="menu-card" data-menu="realtime" onclick="selMenu(this)">
         <div class="menu-top"><span class="menu-name">실시간 리딩 <span class="mbadge b-rt">LIVE</span></span><span class="menu-price">10,000원~</span></div>
@@ -139,7 +201,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="menu-card" data-menu="mixed" onclick="selMenu(this)">
         <div class="menu-top"><span class="menu-name">혼합 리딩 <span class="mbadge b-24">24H+LIVE</span></span><span class="menu-price">5,000원 할인</span></div>
-        <div class="menu-info">실시간 + 질문제 자유 조합 · 합계에서 5,000원 할인</div>
+        <div class="menu-info">실시간 + 질문제 자유 조합 · 합계에서 5,000원 할인<br>질문지 먼저 발송(24시간 이내) → 24시간 이후 실시간 상담 진행</div>
       </div>
       <div class="menu-card" data-menu="solo" onclick="selMenu(this)">
         <div class="menu-top"><span class="menu-name">솔로 패키지 <span class="mbadge b-48">48H</span></span><span class="menu-price">10,000원</span></div>
@@ -155,9 +217,10 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       </div>
       <div class="menu-card" data-menu="weekly" onclick="selMenu(this)">
         <div class="menu-top"><span class="menu-name">위클리 패키지 <span class="mbadge b-wk">7DAYS</span></span><span class="menu-price">70,000원</span></div>
-        <div class="menu-info">양식 제출 시점부터 7일 무제한 상담</div>
+        <div class="menu-info">양식 제출 시점부터 7일 무제한 상담 · 실시간 하루 30분 한도<br>실시간 일정은 양식 제출 후 별도 협의</div>
       </div>
     </div>
+    
     <button class="btn" id="btn1" onclick="go(2)" disabled style="margin-bottom:12px;">다음 단계</button>
     <button class="btn-ghost" onclick="openCheckModal()">내 예약 확인하기</button>
   </div>
@@ -182,31 +245,40 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="slabel">Step 3</div>
     <h2 class="stitle">예약자 정보 및 결제</h2>
     <div class="notice" id="s3summary"></div>
-    <div class="igroup" style="margin-bottom:18px;">
-      <label class="ilabel" style="font-size:.7rem;color:var(--text2);margin-bottom:7px;display:block;">이름</label>
+    
+    <div class="igroup">
+      <label class="ilabel">이름</label>
       <input class="ifield" id="nameInput" placeholder="이름을 입력해 주세요" oninput="chk3()">
     </div>
-    <div class="igroup" style="margin-bottom:18px;">
-      <label class="ilabel" style="font-size:.7rem;color:var(--text2);margin-bottom:7px;display:block;">비밀번호</label>
+    <div class="igroup">
+      <label class="ilabel">예약 확인용 비밀번호</label>
       <input class="ifield" type="password" id="pwInput" maxlength="4" placeholder="비밀번호 4자리 (숫자)" oninput="chk3()">
     </div>
 
     <div class="slabel" style="margin-bottom:14px;">결제 방법</div>
-    <div class="pay-list" style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px;">
-      <div class="pay-card" id="pm-account" onclick="selPay('account')" style="border:1px solid var(--border);border-radius:11px;padding:16px 18px;cursor:pointer;background:rgba(15,13,28,.6);">
-        <div class="pay-name" style="font-size:.92rem;color:#f0ead8;margin-bottom:4px;font-weight:500;">계좌이체</div>
-        <div class="pay-desc" style="font-size:.85rem;color:var(--text3);line-height:1.4;">다음 화면에 보이는 계좌정보로 입금 후 양식을 제출해 주세요</div>
-        <div class="account-box" id="acctBox" style="background:rgba(200,164,86,.05);border:1px solid var(--border);border-radius:9px;padding:14px 16px;margin-top:12px;display:none;">
-          <div class="arow" style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px;"><span class="akey" style="color:var(--text3);">은행</span><span class="aval" style="color:var(--gold2);font-weight:500;">카카오뱅크</span></div>
-          <div class="arow" style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px;"><span class="akey" style="color:var(--text3);">계좌번호</span><span class="aval" style="color:#e8c87a;user-select:all;">3333-37-0910218</span></div>
-          <div class="arow" style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px;"><span class="akey" style="color:var(--text3);">예금주</span><span class="aval" style="color:var(--gold2);font-weight:500;">한서희</span></div>
-          <div class="arow" style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:5px;"><span class="akey" style="color:var(--text3);">입금액</span><span class="aval" id="acctAmt" style="color:var(--gold2);font-weight:500;">—</span></div>
+    <div class="pay-list">
+      <div class="pay-card" id="pm-account" onclick="selPay('account')">
+        <div class="pay-name">계좌이체</div>
+        <div class="pay-desc">다음 화면에 보이는 계좌정보로 입금 후 양식을 제출해 주세요</div>
+        <div class="account-box" id="acctBox">
+          <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
+          <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;user-select:all;">3333-37-0910218</span></div>
+          <div class="arow"><span class="akey">예금주</span><span class="aval">한서희</span></div>
+          <div class="arow"><span class="akey">입금액</span><span class="aval" id="acctAmt">—</span></div>
         </div>
       </div>
-      <div class="pay-card" id="pm-card" onclick="selPay('card')" style="border:1px solid var(--border);border-radius:11px;padding:16px 18px;cursor:pointer;background:rgba(15,13,28,.6);">
-        <div class="pay-name" style="font-size:.92rem;color:#f0ead8;margin-bottom:4px;font-weight:500;">카드결제</div>
-        <div class="pay-desc" style="font-size:.85rem;color:var(--text3);line-height:1.4;">다음 화면에 보이는 사이트에서 결제 후 양식을 제출해 주세요</div>
+      <div class="pay-card" id="pm-card" onclick="selPay('card')">
+        <div class="pay-name">카드결제</div>
+        <div class="pay-desc">다음 화면에 보이는 사이트에서 결제 후 양식을 제출해 주세요</div>
       </div>
+    </div>
+    
+    <div class="policy">
+      <strong>취소 / 환불 안내</strong><br>
+      · 실시간 리딩: 예약 시간 <strong>6시간 전</strong>까지 환불 가능<br>
+      · 실시간 리딩: 예약 시간 <strong>2시간 전</strong>까지 1회 일정 변경 가능<br>
+      · 그 외 메뉴: 상담 양식 제출 후 <strong>1시간 이내</strong> 환불 가능<br>
+      · 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다
     </div>
     <button class="btn-ghost" onclick="go(2)">← 이전</button>
     <button class="btn" id="btn3" onclick="go(4)" disabled>예약 완료</button>
@@ -216,11 +288,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="complete">
       <span class="c-icon">✨</span>
       <div class="c-title">예약 접수 완료</div>
-      <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다</p>
+      <p class="c-desc">결제 완료 후 아래 양식을 카카오톡 채널로 보내주시면<br>예약이 최종 확정됩니다<br><br>⚠️ 결제 후 <strong>1시간 이내</strong> 양식 미제출 시 예약이 취소될 수 있습니다</p>
       <div id="cardPayArea"></div>
       <div class="form-tmpl" id="formTmpl"><span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span></div>
+      
       <a class="kakao-btn" href="https://pf.kakao.com/_RuddX" target="_blank">💬 카카오톡 공개프로필 채팅으로 보내기 →</a>
       <a class="kakao-btn-dark" href="https://open.kakao.com/o/s8mZkU5g" target="_blank">🔒 카카오톡 비공개 오픈채팅으로 보내기 →</a>
+
       <button class="btn-ghost" onclick="resetAll()">처음으로 돌아가기</button>
     </div>
   </div>
@@ -230,21 +304,23 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
   <div class="modal-content">
     <button class="close-modal" onclick="closeCheckModal()">×</button>
     <div class="modal-title">예약 조회</div>
-    <div class="igroup" style="margin-bottom:15px;">
-      <label class="ilabel" style="font-size:.7rem;color:var(--text2);margin-bottom:7px;display:block;">이름</label>
+    <div class="igroup">
+      <label class="ilabel">예약자 이름</label>
       <input class="ifield" id="chkName" placeholder="예약 시 입력한 이름">
     </div>
-    <div class="igroup" style="margin-bottom:15px;">
-      <label class="ilabel" style="font-size:.7rem;color:var(--text2);margin-bottom:7px;display:block;">비밀번호</label>
+    <div class="igroup">
+      <label class="ilabel">비밀번호</label>
       <input class="ifield" type="password" id="chkPw" maxlength="4" placeholder="비밀번호 4자리">
     </div>
     <button class="btn" onclick="doCheck()">조회하기</button>
+
     <div class="chk-res" id="chkResult"></div>
   </div>
 </div>
 
 <script>
-// --- 초기화 및 Firebase 설정 ---
+(()=>{const c=document.getElementById('stars');for(let i=0;i<55;i++){const s=document.createElement('span');const z=Math.random()*1.5+.4;s.style.cssText=`width:${z}px;height:${z}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--dl:${Math.random()*6}s;`;c.appendChild(s);}})();
+
 const firebaseConfig = {
   apiKey: "AIzaSyB4WrXMra_eVmBMTDcJlROBvMGAN4DzRGo",
   authDomain: "heetsignal-21fee.firebaseapp.com",
@@ -258,8 +334,10 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let globalData = {};
+
 const S={menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pw:'',pay:null};
 const MENU_NAMES={realtime:'실시간 리딩',question:'질문제 리딩',mixed:'혼합 리딩',solo:'솔로 패키지',reunionLite:'재회 패키지 Lite',reunion:'재회 패키지',weekly:'위클리 패키지'};
+const MENU_KEYS={realtime:'realtime',question:'question',mixed:'mixed',solo:'solo',reunionLite:'reunionLite',reunion:'reunion',weekly:'weekly'};
 
 db.ref('hs_admin').on('value', (snap) => {
   globalData = snap.val() || {};
@@ -309,7 +387,7 @@ function updSteps(n){
 
 function buildS2(){
   const m=S.menu;
-  const titles={realtime:'시간 선택',question:'질문 수 선택',mixed:'옵션 선택',reunionLite:'예약 확인',solo:'예약 확인',reunion:'예약 확인',weekly:'예약 확인'};
+  const titles={realtime:'시간 선택',question:'질문 수 선택',mixed:'옵션 선택',solo:'예약 확인',reunionLite:'예약 확인',reunion:'예약 확인',weekly:'예약 확인'};
   const descs={
     realtime:'상담 시간과 예약 일정을 선택해 주세요',
     question:'원하시는 질문 개수를 선택해 주세요 (질문당 5,000원)',
@@ -317,7 +395,7 @@ function buildS2(){
     solo:'솔로 패키지 · 10,000원 · 양식 제출 후 48시간 이내 리딩지 발송',
     reunionLite:'재회 패키지 Lite · 15,000원 · 양식 제출 후 48시간 이내 리딩지 발송',
     reunion:'재회 패키지 · 45,000원 · 양식 제출 후 48시간 이내 리딩지 발송',
-    weekly:'위클리 패키지 · 70,000원 · 양식 제출 시점부터 7일 무제한 상담',
+    weekly:'위클리 패키지 · 70,000원 · 양식 제출 시점부터 7일 무제한 상담\n실시간 하루 30분 한도 · 실시간 일정은 양식 제출 후 별도 협의',
   };
   document.getElementById('s2title').textContent=titles[m];
   document.getElementById('s2desc').textContent=descs[m];
@@ -376,18 +454,47 @@ function showTime(type){
   document.getElementById('timeArea').style.display='block';
   const dr=document.getElementById('dateRow');
   dr.innerHTML='';
-  for(let d=0;d<2;d++){
-    const dt = getKST(d);
-    const btn=document.createElement('button');btn.className='date-btn';
-    btn.innerHTML=`${d===0?'오늘':'내일'}<div class="date-day">${dt.getMonth()+1}/${dt.getDate()}</div>`;
+
+  if(type==='mixed'){
+    const dt = getKST(1);
+    const btn=document.createElement('button');
+    btn.className='date-btn';
+    btn.innerHTML=`내일<div class="date-day">${dt.getMonth()+1}/${dt.getDate()}(${['일','월','화','수','목','금','토'][dt.getDay()]})</div>`;
     btn.onclick=()=>{
       document.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('selected'));
       btn.classList.add('selected');
-      S.date=`${dt.getMonth()+1}월 ${dt.getDate()}일`;
+      S.date=`${dt.getMonth()+1}월 ${dt.getDate()}일(${['일','월','화','수','목','금','토'][dt.getDay()]})`;
       S.dateObj=dt;S.time=null;
-      loadSlots(dt, type==='mixed'?24:0);
+      loadSlots(dt,24);
     };
     dr.appendChild(btn);
+    document.getElementById('timeLabel').textContent='실시간 상담 시간';
+    let notice=document.getElementById('mixedNotice');
+    if(!notice){
+      notice=document.createElement('div');
+      notice.id='mixedNotice';
+      notice.className='notice';
+      notice.style.marginBottom='14px';
+      notice.textContent='💬 혼합 리딩은 질문지 발송 후 실시간 상담이 진행됩니다. 질문지는 결제 및 양식 제출 후 24시간 이내 발송되며, 실시간 상담은 현재 시간 기준 24시간 이후부터 예약 가능합니다.';
+      document.getElementById('optArea').after(notice);
+    }
+  } else {
+    for(let d=0;d<2;d++){
+      const dt = getKST(d);
+      const btn=document.createElement('button');btn.className='date-btn';
+      btn.innerHTML=`${d===0?'오늘':'내일'}<div class="date-day">${dt.getMonth()+1}/${dt.getDate()}(${['일','월','화','수','목','금','토'][dt.getDay()]})</div>`;
+      btn.onclick=()=>{
+        document.querySelectorAll('.date-btn').forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        S.date=`${dt.getMonth()+1}월 ${dt.getDate()}일(${['일','월','화','수','목','금','토'][dt.getDay()]})`;
+        S.dateObj=dt;S.time=null;
+        loadSlots(dt,0);
+      };
+      dr.appendChild(btn);
+    }
+    document.getElementById('timeLabel').textContent='예약 시간';
+    const old=document.getElementById('mixedNotice');
+    if(old)old.remove();
   }
   document.getElementById('timeGrid').innerHTML='<div class="no-slots">날짜를 먼저 선택해 주세요</div>';
 }
@@ -395,7 +502,10 @@ function showTime(type){
 function loadSlots(dt,minHoursAhead){
   const data=aData();
   const dk = toFmtKey(dt);
-  const slots=data.slots?.[dk] || [];
+  if(data.closedDays?.[dk]){document.getElementById('timeGrid').innerHTML='<div class="no-slots">해당 날짜는 예약이 마감되었습니다</div>';return;}
+  const slots=data.slots?.[dk];
+  if(!slots||!slots.length){document.getElementById('timeGrid').innerHTML='<div class="no-slots">예약 가능한 시간이 없습니다</div>';return;}
+  
   const nowKst = getKST(0);
   const grid=document.getElementById('timeGrid');grid.innerHTML='';let has=false;
 
@@ -404,7 +514,9 @@ function loadSlots(dt,minHoursAhead){
 
   slots.forEach((t, idx)=>{
     const [h,m]=t.split(':').map(Number);
-    const sd=new Date(dt); sd.setHours(h,m,0,0);
+    const sd=new Date(dt);
+    sd.setHours(h,m,0,0);
+    
     if((sd.getTime() - nowKst.getTime())/3600000 < minHoursAhead) return;
     const diffMinutes = (sd.getTime() - nowKst.getTime()) / 60000;
     if (diffMinutes < 45) return;
@@ -412,19 +524,29 @@ function loadSlots(dt,minHoursAhead){
     has=true;
     let isAvailable = true;
     const bk=`${dk}_${t}`;
+    
     if (data.bookings?.[bk] || data.locked?.[bk+'_blocked'] || data.locked?.[bk]) {
         isAvailable = false;
     } else {
         for (let i = 1; i < blocksNeeded; i++) {
             const nextSlot = slots[idx + i];
-            if (!nextSlot || data.bookings?.[`${dk}_${nextSlot}`] || data.locked?.[`${dk}_${nextSlot}_blocked`] || data.locked?.[`${dk}_${nextSlot}`]) {
-                isAvailable = false; break;
+            if (!nextSlot) { 
+                isAvailable = false; 
+                break; 
+            }
+            const nextBk = `${dk}_${nextSlot}`;
+            if (data.bookings?.[nextBk] || data.locked?.[nextBk+'_blocked'] || data.locked?.[nextBk]) {
+                isAvailable = false; 
+                break;
             }
         }
     }
+
     const btn=document.createElement('button');btn.className='tslot';btn.textContent=t;
+    
     if(!isAvailable){
       if(data.bookings?.[bk]) btn.classList.add('taken');
+      else if(data.locked?.[bk+'_blocked']) btn.classList.add('blocked');
       else btn.classList.add('locked'); 
     } else {
       btn.onclick=()=>{
@@ -437,7 +559,6 @@ function loadSlots(dt,minHoursAhead){
   if(!has)grid.innerHTML='<div class="no-slots">조건에 맞는 시간이 없습니다</div>';
 }
 
-// 🔥 가격 계산 로직 (reunionLite 15,000원 추가)
 function calcPrice(){
   const m=S.menu;
   if(m==='realtime')return(S.dur||0)*1000;
@@ -451,7 +572,7 @@ function calcPrice(){
 }
 
 function buildPrice(){
-  const m=S.menu; let rows='';
+  const m=S.menu;let rows='';
   if(m==='realtime'&&S.dur)rows+=`<div class="prow"><span>실시간 리딩 (${S.dur}분)</span><span>${(S.dur*1000).toLocaleString()}원</span></div>`;
   if(m==='question'&&S.q)rows+=`<div class="prow"><span>질문제 리딩 (${S.q}개)</span><span>${(S.q*5000).toLocaleString()}원</span></div>`;
   if(m==='mixed'){
@@ -464,66 +585,178 @@ function buildPrice(){
   if(m==='reunion')rows+=`<div class="prow"><span>재회 패키지</span><span>45,000원</span></div>`;
   if(m==='weekly')rows+=`<div class="prow"><span>위클리 패키지</span><span>70,000원</span></div>`;
   const total=calcPrice();
-  document.getElementById('priceArea').innerHTML=rows?`<div class="price-box">${rows}<div class="ptotal"><span class="ptotal-amount">${total.toLocaleString()}원</span></div></div>`:'';
+  const pa=document.getElementById('priceArea');
+  if(rows)pa.innerHTML=`<div class="price-box">${rows}<div class="ptotal"><span class="ptotal-label">합계</span><span class="ptotal-amount">${total.toLocaleString()}원</span></div></div>`;
+  else pa.innerHTML='';
 }
 
 function chk2(){
-  const m=S.menu; let ok=false;
+  const m=S.menu;let ok=false;
   if(m==='realtime')ok=!!(S.dur&&S.date&&S.time);
   else if(m==='question')ok=S.q>0;
-  else if(m==='mixed')ok=!!(S.mixDur&&S.q&&S.date&&S.time);
+  else if(m==='mixed'){ok=!!(S.mixDur&&S.q&&S.date&&S.time);}
   else ok=true;
   document.getElementById('btn2').disabled=!ok;
 }
 
 function buildS3(){
+  const m=S.menu;
+  let sum=MENU_NAMES[m];
+  if(m==='realtime')sum+=` · ${S.dur}분 · ${S.date} ${S.time}`;
+  if(m==='question')sum+=` · 질문 ${S.q}개`;
+  if(m==='mixed'){if(S.mixDur)sum+=` · 실시간 ${S.mixDur}분`;if(S.q)sum+=` · 질문 ${S.q}개`;if(S.date&&S.time)sum+=` · ${S.date} ${S.time}`;}
+  sum+=` · ${calcPrice().toLocaleString()}원`;
+  document.getElementById('s3summary').textContent=sum;
   document.getElementById('acctAmt').textContent=calcPrice().toLocaleString()+'원';
+  
+  document.getElementById('nameInput').value='';
+  document.getElementById('pwInput').value='';
+  S.name='';S.pw='';S.pay=null;
+  document.querySelectorAll('.pay-card').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('acctBox').classList.remove('show');
   document.getElementById('btn3').disabled=true;
 }
 
 function selPay(t){
-  S.pay=t; document.querySelectorAll('.pay-card').forEach(p=>p.style.borderColor='var(--border)');
-  document.getElementById('pm-'+t).style.borderColor='var(--gold2)';
-  document.getElementById('acctBox').style.display=(t==='account'?'block':'none');
+  S.pay=t;
+  document.querySelectorAll('.pay-card').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('pm-'+t).classList.add('selected');
+  document.getElementById('acctBox').className='account-box'+(t==='account'?' show':'');
   chk3();
 }
-function chk3(){S.name=document.getElementById('nameInput').value.trim(); S.pw=document.getElementById('pwInput').value.trim(); document.getElementById('btn3').disabled=!(S.name && S.pw.length>=4 && S.pay);}
+
+function chk3(){
+  S.name=document.getElementById('nameInput').value.trim();
+  S.pw=document.getElementById('pwInput').value.trim();
+  document.getElementById('btn3').disabled=!(S.name && S.pw.length >= 4 && S.pay);
+}
 
 function buildS4(){
   const m=S.menu;
   let info=`· 메뉴: ${MENU_NAMES[m]}\n`;
   if(m==='realtime')info+=`· 예약 시간: ${S.date} ${S.time} (${S.dur}분)\n`;
+  if(m==='question')info+=`· 질문 수: ${S.q}개\n`;
   if(m==='mixed'){if(S.mixDur)info+=`· 실시간: ${S.date} ${S.time} (${S.mixDur}분)\n`;if(S.q)info+=`· 질문 수: ${S.q}개\n`;}
-  info+=`· 결제 금액: ${calcPrice().toLocaleString()}원\n· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
-  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
-  document.getElementById('cardPayArea').innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
+  info+=`· 결제 금액: ${calcPrice().toLocaleString()}원\n`;
+  info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
+
+  const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
+  document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
+
+  const cpa=document.getElementById('cardPayArea');
+  cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
+
+  const data=aData();
+  if(!data.bookings)data.bookings={};
   
-  const data=aData(); if(!data.bookings)data.bookings={};
   if(S.dateObj&&S.time&&(m==='realtime'||m==='mixed')){
     const dur=m==='realtime'?S.dur:S.mixDur||0;
-    const dk = toFmtKey(S.dateObj); const bk=`${dk}_${S.time}`; const blockedKeys=[]; const slots=data.slots?.[dk]||[];
-    const idx=slots.indexOf(S.time); const blocks=Math.ceil(dur/15);
-    for(let i=1;i<blocks;i++) if(slots[idx+i]){ data.locked[`${dk}_${slots[idx+i]}_blocked`]=true; blockedKeys.push(slots[idx+i]); }
-    if(slots[idx+blocks]){ data.locked[`${dk}_${slots[idx+blocks]}_blocked`]=true; blockedKeys.push(slots[idx+blocks]); }
-    if(idx>0 && slots[idx-1]){ data.locked[`${dk}_${slots[idx-1]}_blocked`]=true; blockedKeys.push(slots[idx-1]); }
-    data.bookings[bk]={name:S.name,pw:S.pw,pay:S.pay,menu:MENU_NAMES[m],menuKey:m,time:S.time,dur:dur,price:calcPrice(),dateStr:S.date,mixDur:S.mixDur,q:S.q,blockedKeys,ts:Date.now()};
+    if(dur>0){
+      if(!data.locked)data.locked={};
+      const dk = toFmtKey(S.dateObj);
+      const bk=`${dk}_${S.time}`;
+      const blockedKeys=[];
+      const slots=data.slots?.[dk]||[];
+      const idx=slots.indexOf(S.time);
+      const blocks=Math.ceil(dur / 15); 
+      for(let i=1;i<blocks;i++){
+        if(slots[idx+i]){
+          const blkKey=`${dk}_${slots[idx+i]}`;
+          data.locked[blkKey+'_blocked']=true;
+          blockedKeys.push(slots[idx+i]);
+        }
+      }
+      if(slots[idx+blocks]){
+        const afterKey=`${dk}_${slots[idx+blocks]}`;
+        data.locked[afterKey+'_blocked']=true;
+        blockedKeys.push(slots[idx+blocks]);
+      }
+      if(idx>0 && slots[idx-1]){
+        const beforeKey=`${dk}_${slots[idx-1]}`;
+        data.locked[beforeKey+'_blocked']=true;
+        blockedKeys.push(slots[idx-1]);
+      }
+      data.bookings[bk]={
+        name:S.name, pw:S.pw, pay:S.pay,
+        menu:MENU_NAMES[m], menuKey:m,
+        time:S.time, dur:dur, price:calcPrice(),
+        dateStr:S.date, mixDur:S.mixDur, q:S.q,
+        blockedKeys, ts:Date.now()
+      };
+      db.ref('hs_admin').set(data);
+    }
   } else {
-    data.bookings[`other_${Date.now()}`]={name:S.name,pw:S.pw,pay:S.pay,menu:MENU_NAMES[m],menuKey:m,price:calcPrice(),q:S.q,ts:Date.now()};
+    const bk=`other_${Date.now()}`;
+    data.bookings[bk]={
+      name:S.name, pw:S.pw, pay:S.pay,
+      menu:MENU_NAMES[m], menuKey:m,
+      price:calcPrice(), q:S.q, ts:Date.now()
+    };
+    db.ref('hs_admin').set(data);
   }
-  db.ref('hs_admin').set(data);
 }
 
-function resetAll(){ location.reload(); }
-function openCheckModal(){ document.getElementById('chkModal').classList.add('show'); }
-function closeCheckModal(){ document.getElementById('chkModal').classList.remove('show'); }
+function resetAll(){
+  Object.assign(S,{menu:null,dur:null,q:0,mixDur:null,date:null,dateObj:null,time:null,name:'',pw:'',pay:null});
+  document.querySelectorAll('.menu-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('btn1').disabled=true;
+  document.getElementById('cardPayArea').innerHTML='';
+  go(1);
+}
+
+function openCheckModal(){
+  document.getElementById('chkName').value='';
+  document.getElementById('chkPw').value='';
+  document.getElementById('chkResult').classList.remove('show');
+  document.getElementById('chkModal').classList.add('show');
+}
+
+function closeCheckModal(){
+  document.getElementById('chkModal').classList.remove('show');
+}
+
 function doCheck(){
-  const n = document.getElementById('chkName').value.trim(); const p = document.getElementById('chkPw').value.trim();
-  const bks = Object.values(aData().bookings || {}).sort((a,b)=>b.ts-a.ts);
-  const f = bks.find(b=>b.name===n && b.pw===p);
-  if(!f) { alert('내역이 없습니다.'); return; }
-  let html = `<div style="font-size:.82rem;color:var(--text2);line-height:1.7;">· 메뉴: ${f.menu}<br>· 결제: ${(f.price||0).toLocaleString()}원 (${f.pay==='account'?'계좌':'카드'})</div>`;
-  if(f.pay==='account') html+=`<div class="account-box show">카카오뱅크 3333-37-0910218 한서희</div>`;
-  document.getElementById('chkResult').innerHTML = html; document.getElementById('chkResult').classList.add('show');
+  const n = document.getElementById('chkName').value.trim();
+  const p = document.getElementById('chkPw').value.trim();
+  if(!n || !p) { alert('이름과 비밀번호를 입력해 주세요.'); return; }
+
+  const data = aData();
+  const bookings = data.bookings || {};
+  const bks = Object.values(bookings).sort((a,b)=>(b.ts||0) - (a.ts||0));
+  const found = bks.find(b => b.name === n && b.pw === p);
+
+  if(!found) {
+    alert('입력하신 정보와 일치하는 예약 내역이 없습니다.');
+    return;
+  }
+
+  let info = `· 메뉴: ${found.menu}\n`;
+  if(found.menuKey==='realtime') info+=`· 예약 시간: ${found.dateStr||''} ${found.time||''} (${found.dur||0}분)\n`;
+  if(found.menuKey==='question') info+=`· 질문 수: ${found.q||0}개\n`;
+  if(found.menuKey==='mixed'){
+    if(found.mixDur) info+=`· 실시간: ${found.dateStr||''} ${found.time||''} (${found.mixDur}분)\n`;
+    if(found.q) info+=`· 질문 수: ${found.q}개\n`;
+  }
+  info+=`· 결제 금액: ${(found.price||0).toLocaleString()}원\n`;
+  info+=`· 결제 방법: ${found.pay==='account'?'계좌이체':'카드결제'}`;
+
+  let html = `<div class="slabel">조회 결과</div>
+              <div style="font-size:.82rem; color:var(--text2); line-height:1.7; margin-bottom:16px;">${info.replace(/\n/g, '<br>')}</div>`;
+
+  if(found.pay === 'account') {
+    html += `<div class="account-box show" style="margin-bottom:16px;">
+               <div class="arow"><span class="akey">은행</span><span class="aval">카카오뱅크</span></div>
+               <div class="arow"><span class="akey">계좌번호</span><span class="aval" style="color:#e8c87a;user-select:all;">3333-37-0910218</span></div>
+               <div class="arow"><span class="akey">예금주</span><span class="aval">한서희</span></div>
+               <div class="arow"><span class="akey">입금액</span><span class="aval">${(found.price||0).toLocaleString()}원</span></div>
+             </div>`;
+  }
+
+  const formStr = `📋 【예약 정보】\n이름: ${found.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
+  html += `<div class="form-tmpl" style="margin-bottom:0;"><span class="ftitle">✦ 제출 양식</span>${formStr}</div>`;
+
+  document.getElementById('chkResult').innerHTML = html;
+  document.getElementById('chkResult').classList.add('show');
 }
 </script>
 </body>
