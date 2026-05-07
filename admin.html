@@ -163,7 +163,8 @@ db.ref('hs_admin').on('value', (snap) => {
 function ad() { return globalData; }
 function sad(d) { db.ref('hs_admin').set(d); }
 
-const MENU_DEADLINE = { question:24, mixed:24, solo:48, reunion:48, weekly:168 };
+// 🔥 새 메뉴인 reunionLite 마감 기한 설정 추가 (48시간)
+const MENU_DEADLINE = { question:24, mixed:24, solo:48, reunionLite:48, reunion:48, weekly:168 };
 
 function switchTab(t){
   document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active',['slots','bookings'][i]===t));
@@ -172,7 +173,6 @@ function switchTab(t){
   if(t==='bookings') renderBookings();
 }
 
-// 🔥 무조건 한국 시간(KST)으로 고정하는 함수
 function getKST(addDays = 0) {
   const now = new Date();
   const kstString = now.toLocaleString("en-US", {timeZone: "Asia/Seoul"});
@@ -340,7 +340,6 @@ function renderBookings(){
       grouped[dk].push(b);
     });
     rtEl.innerHTML = Object.keys(grouped).sort().map(dk=>{
-      // 🔥 날짜 파싱 오류 해결
       const parts = dk.split('-');
       const dDate = new Date(parts[0], parts[1]-1, parts[2]);
       const dlabel = `${dDate.getMonth()+1}/${dDate.getDate()}(${['일','월','화','수','목','금','토'][dDate.getDay()]})`;
