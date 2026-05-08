@@ -48,9 +48,9 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .slabel{font-size:.62rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:10px;}
 .slabel::after{content:'';flex:1;height:1px;background:linear-gradient(to right,var(--border),transparent);}
 .stitle{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:400;color:var(--gold2);margin-bottom:8px;letter-spacing:.04em;}
-.sdesc{font-size:.85rem;color:#a8a090;line-height:1.8;margin-bottom:26px;}
+.sdesc{font-size:.82rem;color:#a8a090;line-height:1.8;margin-bottom:26px;}
 
-/* 🔥 MENU CARDS (여백 및 크기 원상 복구) */
+/* MENU CARDS */
 .menu-grid{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;}
 .menu-card{border:1px solid var(--border);border-radius:12px;padding:20px 22px;cursor:pointer;transition:all .22s;background:rgba(15,13,28,.6);position:relative;overflow:hidden;}
 .menu-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 0% 0%,var(--glow),transparent 65%);opacity:0;transition:opacity .22s;}
@@ -105,7 +105,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ifield:focus{border-color:var(--gold);}
 .ifield::placeholder{color:var(--text3);}
 
-/* 🔥 PAYMENT CARDS (인라인 스타일 오류 해결 & 크기 확대) */
+/* PAYMENT */
 .pay-list{display:flex;flex-direction:column;gap:14px;margin-bottom:24px;}
 .pay-card{border:1px solid var(--border);border-radius:12px;padding:20px 22px;cursor:pointer;transition:all .2s;background:rgba(15,13,28,.6);}
 .pay-card:hover{border-color:var(--border2);}
@@ -218,14 +218,22 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="slabel">Step 2</div>
     <h2 class="stitle" id="s2title">옵션 선택</h2>
     <p class="sdesc" id="s2desc"></p>
+    
     <div id="optArea"></div>
+    
     <div id="timeArea" style="display:none">
       <div class="olabel">예약 날짜</div>
       <div class="date-row" id="dateRow"></div>
       <div class="olabel" id="timeLabel">예약 시간</div>
       <div class="tgrid" id="timeGrid"></div>
+      
+      <div class="notice" style="margin-top:16px; margin-bottom:0; font-size:0.8rem; line-height:1.7;">
+        💬 원하시는 시간이 없거나 자정(24:00) 이후 심야 상담을 원하시는 경우,<br>
+        카카오톡 채널로 편하게 문의해 주세요.
+      </div>
     </div>
-    <div id="priceArea"></div>
+    
+    <div id="priceArea" style="margin-top:24px;"></div>
     <button class="btn-ghost" onclick="go(1)">← 이전</button>
     <button class="btn" id="btn2" onclick="go(3)" disabled>다음 단계</button>
   </div>
@@ -413,7 +421,6 @@ function buildS2(){
         ${[1,2,3,4,5].map(n=>`<button class="obtn" onclick="selMQ(this,${n})">${n}개 · ${(n*5000).toLocaleString()}원</button>`).join('')}
       </div></div>`;
   } else {
-    // 🔥 패키지 선택 시 혼동하지 않도록 명시적인 안내 추가
     oa.innerHTML = `
       <div class="notice" style="background:rgba(200,164,86,.12); border-color:var(--gold2); border-radius:8px;">
         <span style="color:var(--gold2); font-weight:500; font-size:1rem; display:block; margin-bottom:6px;">✔️ 패키지 선택 완료</span>
