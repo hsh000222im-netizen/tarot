@@ -647,7 +647,7 @@ function buildS4(){
   document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
   const cpa=document.getElementById('cardPayArea');
-  cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://smartstore.naver.com/heetsignal/products/13414177650" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
+  cpa.innerHTML=S.pay==='card'?`<a class="card-pay-btn" href="https://mkt.shopping.naver.com/link/69f9aa055358056105d6b7b0" target="_blank">카드결제 (네이버 스마트스토어) →</a>`:'';
 
   const data=aData();
   if(!data.bookings)data.bookings={};
