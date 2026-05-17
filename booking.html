@@ -643,7 +643,7 @@ function buildS4(){
   info+=`· 결제 금액: ${calcPrice().toLocaleString()}원\n`;
   info+=`· 결제 방법: ${S.pay==='account'?'계좌이체':'카드결제'}`;
 
-  const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
+  const form=`📋 【예약 정보】\n이름: ${S.name}\n${info}\n\n📋 【상담 양식】\n성함 및 생년월일 : (소울넘버 확인용) \n상대방 생년월일 : (소울넘버 확인용) \n상세 사연 : \n핵심 질문 : `;
   document.getElementById('formTmpl').innerHTML=`<span class="ftitle">✦ 아래 내용을 복사하여 작성 후 1시간 이내에 카카오톡으로 보내주세요.</span>${form}`;
 
   const cpa=document.getElementById('cardPayArea');
@@ -755,7 +755,7 @@ function doCheck(){
              </div>`;
   }
 
-  const formStr = `📋 【예약 정보】\n이름: ${found.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : \n상대방 나이 : \n상세 사연 : \n핵심 질문 : `;
+  const formStr = `📋 【예약 정보】\n이름: ${found.name}\n${info}\n\n📋 【상담 양식】\n성함 및 나이 : (소울넘버 확인용) \n상대방 나이 : (소울넘버 확인용) \n상세 사연 : \n핵심 질문 : `;
   html += `<div class="form-tmpl" style="margin-bottom:0;"><span class="ftitle">✦ 제출 양식</span>${formStr}</div>`;
 
   document.getElementById('chkResult').innerHTML = html;
